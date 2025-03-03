@@ -29,7 +29,10 @@ use Symfony\Component\HttpFoundation\Request;
         $form->handleRequest($request);
         if($form->isSubmitted()&& $form->isValid()){
             $entityManager->persist($category);
+            
             $entityManager->flush();
+            $this->addFlash('success', 'Categorie créée avec succès');
+            return $this->redirectToRoute('app_category');
         }
         return $this->render('category/create.html.twig', [
             'controller_name' => 'CategoryController',
@@ -46,6 +49,9 @@ use Symfony\Component\HttpFoundation\Request;
         $form->handleRequest($request);
         if($form->isSubmitted()&& $form->isValid()){
             $entityManager->flush();
+        $this->addFlash('success', 'Categorie modifiée avec succès');
+        return $this->redirectToRoute('app_category');
+
         }
         return $this->render('category/update.html.twig', [
             'controller_name' => 'CategoryController',
@@ -57,7 +63,9 @@ use Symfony\Component\HttpFoundation\Request;
     public function deleteCategory(Category $category,EntityManagerInterface $entityManager): Response
     {
         $entityManager->remove($category);
+      
         $entityManager->flush();
+        $this->addFlash('success', 'Categorie supprimée avec succès');
         return $this->redirectToRoute('app_category');
     }
 
