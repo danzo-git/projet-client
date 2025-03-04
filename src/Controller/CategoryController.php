@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
  class CategoryController extends AbstractController
 {
-    #[Route('/category', name: 'app_category')]
+    #[Route('/admin/category', name: 'app_category')]
     public function index(CategoryRepository $categoryRepository): Response
     {
         $categories=$categoryRepository->findAll();
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
         ]);
     }
 
-    #[Route('/category/create', name: 'app_category_create')]
+    #[Route('/admin/category/create', name: 'app_category_create')]
     public function addCategory(EntityManagerInterface $entityManager,Request $request): Response
     {
         $category=new Category();
@@ -41,7 +41,7 @@ use Symfony\Component\HttpFoundation\Request;
     }
 
 
-    #[Route('/category/{id}/update', name: 'app_category_update')]
+    #[Route('/admin/category/{id}/update', name: 'app_category_update')]
     public function updateCategory(Category $category,EntityManagerInterface $entityManager,Request $request): Response
     {
        
@@ -59,7 +59,7 @@ use Symfony\Component\HttpFoundation\Request;
         ]);
     }
 
-    #[Route('/category/{id}/delete', name: 'app_category_delete')]
+    #[Route('/admin/category/{id}/delete', name: 'app_category_delete')]
     public function deleteCategory(Category $category,EntityManagerInterface $entityManager): Response
     {
         $entityManager->remove($category);
