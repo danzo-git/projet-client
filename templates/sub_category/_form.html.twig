@@ -1,0 +1,26 @@
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">📝 Ajouter  une Sous-Catégorie</h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.name, 'Nom de la sous-catégorie', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.category, 'Catégorie', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-danger shadow-sm">
+                        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
