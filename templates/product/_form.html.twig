@@ -1,0 +1,40 @@
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">🛍️ Ajouter un Produit</h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.name, 'Nom du produit', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Nom du produit'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.price, 'Prix', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': 'Prix en €'}}) }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description du produit'}}) }}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.taille, 'Taille', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.taille, {'attr': {'class': 'form-control', 'placeholder': 'Taille du produit'}}) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.subCategories, 'Sous-Catégories', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.subCategories, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-danger shadow-sm">
+                        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
