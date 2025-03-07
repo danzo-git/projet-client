@@ -4,12 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Entity\ProductImage;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/product')]
 final class ProductController extends AbstractController
@@ -22,25 +25,60 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $product = new Product();
-        $form = $this->createForm(ProductType::class, $product);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($product);
-            $entityManager->flush();
-            $this->addFlash('success', 'votre produit a ete ajouté');
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('product/new.html.twig', [
-            'product' => $product,
-            'form' => $form,
-        ]);
-    }
+ #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
+ 
+ public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+ {
+     $product = new Product();
+     // Nous ne pré-ajoutons pas d'image par défaut
+     
+     $form = $this->createForm(ProductType::class, $product);
+     $form->handleRequest($request);
+ 
+     if ($form->isSubmitted() && $form->isValid()) {
+         // Récupérer toutes les images soumises
+         $productImages = $product->getProductImages();
+         
+         // Pour chaque image dans la collection
+         foreach ($productImages as $key => $productImage) {
+             // Récupérer le fichier
+             $imageForm = $form->get('productImages')->get($key);
+             $imageFile = $imageForm->get('imagePath')->getData();
+             
+             // Si un fichier a été téléchargé
+             if ($imageFile) {
+                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                 $safeFilename = $slugger->slug($originalFilename);
+                 $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+ 
+                 try {
+                     $imageFile->move(
+                         $this->getParameter('images_directory'),
+                         $newFilename
+                     );
+                     
+                     // Définir le chemin de l'image
+                     $productImage->setImagePath($newFilename);
+                 } catch (FileException $e) {
+                     $this->addFlash('error', 'Une erreur est survenue lors du téléchargement de l\'image.');
+                 }
+             } else {
+                 // Si pas d'image, on retire cette entrée de la collection
+                 $product->removeProductImage($productImage);
+             }
+         }
+ 
+         $entityManager->persist($product);
+         $entityManager->flush();
+         $this->addFlash('success', 'Votre produit a été ajouté');
+         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+     }
+ 
+     return $this->render('product/new.html.twig', [
+         'product' => $product,
+         'form' => $form,
+     ]);
+ }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
     public function show(Product $product): Response
@@ -60,7 +98,7 @@ final class ProductController extends AbstractController
             $entityManager->flush();
             $this->addFlash('success', 'votre produit a ete modifié');
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
-            
+
         }
 
         return $this->render('product/edit.html.twig', [

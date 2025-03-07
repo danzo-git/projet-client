@@ -27,6 +27,14 @@
                 <th>Taille</th>
                 <td>{{ product.taille }}</td>
             </tr>
+ <tr>
+ <th>Image</th>
+ <td>
+            {% for image in product.images %}
+    <img src="{{ asset('uploads/' ~ image.imagePath) }}" alt="Product Image" width="150">
+{% endfor %}
+</td>
+ </tr>
         </tbody>
     </table>
 
