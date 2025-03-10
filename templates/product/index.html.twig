@@ -18,6 +18,7 @@
 							<th>Description</th>
 							<th>Prix</th>
 							<th>Taille</th>
+							<th>stock</th>
 							<th class="text-center">Actions</th>
 						</tr>
 					</thead>
@@ -33,10 +34,11 @@
 										{% endif %}
 									{% endfor %}
 								</td>
-								<td>{{ product.description }}</td>
+								<td>{{ product.description|slice(0,60) }}</td>
 								<td>{{ product.price }}
 									€</td>
 								<td>{{ product.taille }}</td>
+									<td>{{ product.stock > 0 ? product.stock :"<span class='badge badge-danger'>Stock epuisé </span> "}}</td>
 								<td class="text-center">
 									<a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-info btn-sm">
 										<i class="fas fa-eye"></i>
@@ -51,7 +53,10 @@
 										{{ include('product/_delete_form.html.twig') }}
 
 									</a>
-
+										<a href="{{ path('app_product_stock', {'id': product.id}) }}" class="btn btn-warning btn-sm">
+										<i class="fas fa-stock"></i>
+										stock
+									</a>
 								</td>
 							</tr>
 						{% else %}

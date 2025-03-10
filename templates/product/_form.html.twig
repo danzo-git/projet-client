@@ -24,14 +24,18 @@
                     {{ form_label(form.taille, 'Taille', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.taille, {'attr': {'class': 'form-control', 'placeholder': 'Taille du produit'}}) }}
                 </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.stock, 'stock', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'placeholder': 'stock du produit'}}) }}
+                </div>
                 <div class="col-md-6 mb-3">
                     {{ form_label(form.subCategories, 'Sous-Catégories', {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.subCategories, {'attr': {'class': 'form-control'}}) }}
                 </div>
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label">Images (max 4)</label>
+
+                 <div class="col-md-6 mb-3">
+                
                 
                 <!-- Container pour les images -->
                 <div class="image-upload-container">
@@ -62,6 +66,9 @@
                     data-index="{{ form.productImages|length }}">
                 </div>
             </div>
+            </div>
+            
+           
 
             <div class="text-center mt-3">
                 <button class="btn btn-danger shadow-sm">

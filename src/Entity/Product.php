@@ -15,7 +15,7 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,unique: true)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -38,6 +38,15 @@ class Product
      */
     #[ORM\OneToMany(mappedBy: "product", targetEntity: ProductImage::class, cascade: ["persist", "remove"], orphanRemoval: true)]
     private Collection $productImages;
+
+    #[ORM\Column]
+    private ?int $stock = null;
+
+    /**
+     * @var Collection<int, AddProductHistory>
+     */
+    #[ORM\OneToMany(targetEntity: AddProductHistory::class, mappedBy: 'product')]
+    private Collection $addProductHistories;
     
 
 
@@ -45,6 +54,7 @@ class Product
     {
         $this->subCategories = new ArrayCollection();
         $this->productImages = new ArrayCollection();
+        $this->addProductHistories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -150,6 +160,48 @@ class Product
             // set the owning side to null (unless already changed)
             if ($productImage->getProduct() === $this) {
                 $productImage->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AddProductHistory>
+     */
+    public function getAddProductHistories(): Collection
+    {
+        return $this->addProductHistories;
+    }
+
+    public function addAddProductHistory(AddProductHistory $addProductHistory): static
+    {
+        if (!$this->addProductHistories->contains($addProductHistory)) {
+            $this->addProductHistories->add($addProductHistory);
+            $addProductHistory->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddProductHistory(AddProductHistory $addProductHistory): static
+    {
+        if ($this->addProductHistories->removeElement($addProductHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($addProductHistory->getProduct() === $this) {
+                $addProductHistory->setProduct(null);
             }
         }
 

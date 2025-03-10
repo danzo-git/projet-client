@@ -31,6 +31,7 @@ class ProductType extends AbstractType
                 ],
             ])
             ->add('taille')
+            ->add('stock')
             ->add('subCategories', EntityType::class, [
                 'class' => SubCategory::class,
                 'choice_label' => 'name',

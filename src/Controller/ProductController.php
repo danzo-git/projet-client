@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\AddProductHistory;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Entity\ProductImage;
+use App\Form\AddProductHistoryType;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -70,6 +72,13 @@ final class ProductController extends AbstractController
  
          $entityManager->persist($product);
          $entityManager->flush();
+
+         $stockHistory = new AddProductHistory();
+         $stockHistory->setProduct($product);
+         $stockHistory->setQuantity($product->getStock());
+         $stockHistory->setCreatedAt(new \DateTimeImmutable());
+         $entityManager->persist($stockHistory);
+         $entityManager->flush();
          $this->addFlash('success', 'Votre produit a été ajouté');
          return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
      }
@@ -120,4 +129,39 @@ final class ProductController extends AbstractController
 
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+ #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET', 'POST'])]
+ public function stock($id,Request $request, EntityManagerInterface $entityManager,ProductRepository $productRepository): Response
+ {
+    $stockHistory = new AddProductHistory();
+     $form = $this->createForm(AddProductHistoryType::class, $stockHistory);
+     $form->handleRequest($request);
+     $product=$productRepository->find($id);
+    if ($form->isSubmitted() && $form->isValid()) {
+        if($stockHistory->getQuantity()>0){
+          $newQte=$product->getStock() + $stockHistory->getQuantity();  
+          $product->setStock($newQte);
+          $stockHistory->setProduct($product);
+          $stockHistory ->setCreatedAt(new \DateTimeImmutable());
+          $entityManager->persist($stockHistory);
+
+          $entityManager->flush(); 
+          $this->addFlash('success', 'votre stock a ete modifié');
+          return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+        }
+        else{
+            $this->addFlash('danger', 'votre stock doit etre superieur a 0');
+            return $this->redirectToRoute('app_product_stock', ['id'=>$product->getId()], Response::HTTP_SEE_OTHER);
+
+        }
+    }
+       
+      
+     return $this->render('product/stock.html.twig', [
+         'product' => $product,
+         'form' => $form->createView(),
+     ]);
+
+}
 }
