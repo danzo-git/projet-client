@@ -1,0 +1,30 @@
+
+{% extends 'base.html.twig' %}
+
+
+{% block content %}
+<div class="container mt-2">
+<br>
+ <table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">id</th>
+      <th scope="col">quantité</th>
+      <th scope="col">date d'ajout</th>
+      {# <th scope="col">Handle</th> #}
+    </tr>
+  </thead>
+  <tbody>
+  {% for productHistory in addProductHistories %}
+    <tr>
+      <th scope="row">{{productHistory.id}}</th>
+      <td>{{productHistory.quantity}}</td>
+      <td>{{productHistory.createdAt|date('d-m-y h:i:s')}}</td>
+      {# <td>@mdo</td> #}
+    </tr>
+    {% endfor  %}
+  </tbody>
+</table>
+</div>
+
+{% endblock  %}

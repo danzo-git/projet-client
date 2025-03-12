@@ -53,9 +53,15 @@
 										{{ include('product/_delete_form.html.twig') }}
 
 									</a>
+									
 										<a href="{{ path('app_product_stock', {'id': product.id}) }}" class="btn btn-warning btn-sm">
 										<i class="fas fa-stock"></i>
 										stock
+									</a>
+
+									<a href="{{ path('app_product_stock_history', {'id': product.id}) }}" class="btn btn-warning btn-sm">
+										<i class="fas fa-edit"></i>
+										historique
 									</a>
 								</td>
 							</tr>
