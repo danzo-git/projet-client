@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
+use Dom\Entity;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -40,4 +42,20 @@ class ProductRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    /**
+//     * @return Bien[] Returns an array of Bien objects
+//     */
+   public function find10Biens(EntityManager $entityManager): array
+   {
+    $qb = $entityManager->createQueryBuilder();
+    $qb->select('p', 's', 'pi')
+       ->from('App\Entity\Product', 'p')
+       ->leftJoin('p.subCategories', 's')
+       ->leftJoin('p.productImages', 'pi');
+    
+    $query = $qb->getQuery();
+    $products = $query->getResult();
+    return $products;
+   }
 }

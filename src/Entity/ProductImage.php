@@ -17,7 +17,7 @@ class ProductImage
     private ?string $imagePath = null;
 
     #[ORM\ManyToOne(inversedBy: 'productImages')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false,onDelete: "CASCADE")]
     private ?Product $product = null;
 
     public function getId(): ?int
