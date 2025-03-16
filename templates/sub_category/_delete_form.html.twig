@@ -1,8 +1,7 @@
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 <form method="post" action="{{ path('app_sub_category_delete', {'id': sub_category.id}) }}" onsubmit="return confirmDelete(event)">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sub_category.id) }}">
-    <button class="btn">Delete</button>
+    <button class="btn"><i class= "fa fa-trash"></i></button>
 </form>
 <script>
     function confirmDelete(event) {

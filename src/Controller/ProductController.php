@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/product')]
+#[Route('admin/product')]
 final class ProductController extends AbstractController
 {
     #[Route(name: 'app_product_index', methods: ['GET'])]
@@ -181,7 +181,7 @@ final class ProductController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($product);
-            $this->addFlash('danger', 'votre produit a ete supprimé');
+            $this->addFlash('success', 'votre produit a ete supprimé');
 
             $entityManager->flush();
 

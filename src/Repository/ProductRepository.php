@@ -44,8 +44,8 @@ class ProductRepository extends ServiceEntityRepository
     //    }
 
     /**
-//     * @return Bien[] Returns an array of Bien objects
-//     */
+    * @return Product[] Returns an array of Bien objects   
+     */
    public function find10Biens(EntityManager $entityManager): array
    {
     $qb = $entityManager->createQueryBuilder();
@@ -57,5 +57,24 @@ class ProductRepository extends ServiceEntityRepository
     $query = $qb->getQuery();
     $products = $query->getResult();
     return $products;
+   }
+
+
+   public function find3ProductsByRandomWithSubCategoryAndCategoryAndImagesAssociated(EntityManager $entityManager): array
+   {
+       $qb = $entityManager->createQueryBuilder();
+       $qb->select('p', 's', 'pi')
+          ->from('App\Entity\Product', 'p')
+          ->leftJoin('p.subCategories', 's')
+          ->leftJoin('p.productImages', 'pi')
+          ->orderBy('RAND()')
+          ->groupBy('p.id', 's.id', 'pi.id') // Groupement pour éviter les doublons
+          ->setMaxResults(3)
+         ;
+       
+       $query = $qb->getQuery();
+       $products = $query->getResult();
+       
+       return $products;
    }
 }
