@@ -16,7 +16,7 @@
             {% endfor %}
         </p>
         <h3 class="product-name">
-            <a href="#">{{ product.name }}</a>
+            <a href="{{path('app_product_show_customer',{'id':product.id})}}">{{ product.name }}</a>
         </h3>
         <h4 class="product-price">{{ product.price }} fcfa</h4>
         <div class="product-rating">

@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\SubCategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,7 +17,8 @@ class HomeController extends AbstractController
     public function index(
         ProductRepository $productRepository,
         CategoryRepository $categoryRepository,
-        SubCategoryRepository $subCategoryRepository
+        SubCategoryRepository $subCategoryRepository,
+        EntityManagerInterface $entityManager
     ): Response {
         // Get categories with random products
         $productsByRandom = $categoryRepository->findBy([], ['name' => 'ASC']);
@@ -34,11 +37,21 @@ class HomeController extends AbstractController
         $subCategories = $subCategoryRepository->findAll();
         
         return $this->render('home/index.html.twig', [
-            'productsByRandom' => $productsByRandom,
+            'collectionsByRandom' => $productRepository->find3ProductsByRandomWithSubCategoryAndCategoryAndImagesAssociated($entityManager),
             'products' => $products,
             'newProducts' => $newProducts,
             'topProducts' => $topProducts,
             'subCategories' => $subCategories,
+        ]);
+    }
+
+
+    #[Route('/{id}/show', name: 'app_product_show_customer', methods: ['GET'])]
+    public function show(Product $product): Response
+    {
+        
+        return $this->render('home/show.html.twig', [
+            'product' => $product,
         ]);
     }
 }

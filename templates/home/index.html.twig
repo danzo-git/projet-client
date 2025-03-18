@@ -13,32 +13,30 @@
 			<!-- row -->
 	<div class="row">
     <!-- shop -->
-    {% for category in productsByRandom %}
-        {% if category.subCategories is not empty %}
-            {% set randomSubCategory = category.subCategories|first %}
-            {% if randomSubCategory.products is not empty %}
-                {% set randomProduct = randomSubCategory.products|first %}
-                <div class="col-md-4 col-xs-6">
-                    <div class="shop">
-                        <!-- Affichage de l'image du produit -->
-                        <div class="shop-img">
-                            {% if randomProduct.productImages is not empty %}
-                                {% set randomProductImage = randomProduct.productImages|first %}
-                                <img src="{{ asset('uploads/' ~ randomProductImage.imagePath) }}" alt="{{ randomProduct.name }}">
-                            {% else %}
-                                <img src="{{ asset('img/placeholder.png') }}" alt="No image available">
-                            {% endif %}
-                        </div>
-
-                        <!-- Affichage du nom de la sous-catégorie -->
-                        <div class="shop-body">
-                            <h3>Collection<br>{{ randomSubCategory.name }}</h3>
-                            <a href="#" class="cta-btn">Achetez maintenant ! <i class="fa fa-arrow-circle-right"></i></a>
-                        </div>
-                    </div>
+    {% for collectionProduct in collectionsByRandom %}
+	{# {{dump(collectionProduct)}} #}
+        <div class="col-md-4 col-xs-6">
+            <div class="shop">
+                <!-- Affichage de l'image du produit -->
+                <div class="shop-img">
+                    {% if collectionProduct.productImages is not empty %}
+                        <img src="{{ asset('uploads/' ~ collectionProduct.productImages[0].imagePath) }}" alt="{{ collectionProduct.name }}">
+                    {% else %}
+                        {# <img src="{{ asset('img/placeholder.png') }}" alt="No image available"> #}
+                    {% endif %}   
                 </div>
-            {% endif %}
-        {% endif %}
+
+                <!-- Affichage du nom de la sous-catégorie -->
+                <div class="shop-body">
+                    <h3>Collection<br>  
+                    {% if collectionProduct.subCategories is not empty %}
+                        {{ collectionProduct.subCategories[0].name }}
+                    {% endif %}
+                    </h3>
+                    <a href="#" class="cta-btn">Achetez maintenant ! <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+        </div>
     {% endfor %}
     <!-- /shop -->
 </div>
@@ -61,7 +59,7 @@
 				<div class="col-md-12">
 					<div class="section-title">
 						<h3 class="title">Nouvelle Arrivage</h3>
-						<div class="section-nav">
+						{# <div class="section-nav">
 							<ul class="section-tab-nav tab-nav" id="nouveautes-tabs">
 								<li class="active">
 									<a data-toggle="tab" href="#tab1">Laptops</a>
@@ -76,7 +74,7 @@
 									<a data-toggle="tab" href="#tab1">Accessories</a>
 								</li>
 							</ul>
-						</div>
+						</div> #}
 					</div>
 				</div>
 				<!-- /section title -->
