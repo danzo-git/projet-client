@@ -14,7 +14,7 @@
 	<div class="row">
     <!-- shop -->
     {% for collectionProduct in collectionsByRandom %}
-	{# {{dump(collectionProduct)}} #}
+	
         <div class="col-md-4 col-xs-6">
             <div class="shop">
                 <!-- Affichage de l'image du produit -->
@@ -22,7 +22,7 @@
                     {% if collectionProduct.productImages is not empty %}
                         <img src="{{ asset('uploads/' ~ collectionProduct.productImages[0].imagePath) }}" alt="{{ collectionProduct.name }}">
                     {% else %}
-                        {# <img src="{{ asset('img/placeholder.png') }}" alt="No image available"> #}
+                        <img src="{{ asset('img/placeholder.png') }}" alt="No image available">
                     {% endif %}   
                 </div>
 
@@ -30,15 +30,20 @@
                 <div class="shop-body">
                     <h3>Collection<br>  
                     {% if collectionProduct.subCategories is not empty %}
-                        {{ collectionProduct.subCategories[0].name }}
+						{% set categorieName = collectionProduct.subCategories.getValues[0].getCategory.getName %}
+                        {{categorieName }}
                     {% endif %}
                     </h3>
-                    <a href="#" class="cta-btn">Achetez maintenant ! <i class="fa fa-arrow-circle-right"></i></a>
+					{% set id = collectionProduct.subCategories.getValues[0].getCategory.id %}
+                    <a href="{{path('app_sub_category_show_collection_product',{'id':id})}}" class="cta-btn">Achetez maintenant ! <i class="fa fa-arrow-circle-right"></i></a>
+					
                 </div>
             </div>
         </div>
+		
     {% endfor %}
     <!-- /shop -->
+	
 </div>
 		</div>
 		<!-- /container -->
