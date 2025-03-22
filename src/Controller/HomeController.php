@@ -10,6 +10,7 @@ use App\Repository\ProductRepository;
 use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -44,6 +45,7 @@ class HomeController extends AbstractController
             'newProducts' => $newProducts,
             'topProducts' => $topProducts,
             'subCategories' => $subCategories,
+            'categories' => $categoryRepository->findAll(),
         ]);
     }
 
@@ -79,24 +81,121 @@ class HomeController extends AbstractController
 
 
 #[Route('/{id}/showCollectionProduct', name: 'app_sub_category_show_collection_product', methods: ['GET'])]
-public function showCollectionProduct(Category $category): Response{
-    $categorieName = $category->getName();
-  
-    
-    $categoryProducts= $category->getSubCategories()->getValues();
-     // Initialize an array to store all products
-     $allProducts = [];
+public function showCollectionProduct(
+    Category $category, 
+    Request $request, 
+    ProductRepository $productRepository,
+    EntityManagerInterface $entityManager
+): Response {
+    // Récupérer les paramètres de filtre
+    $subCategoryIds = $request->query->all('subcategories');
+   // Dans votre méthode de contrôleur
+$minPrice = $request->query->get('price_min');
+$maxPrice = $request->query->get('price_max');
 
-     // Loop through each subcategory and get its products
-     foreach ($category->getSubCategories() as $subCategory) {
-         // Add the products of the current subcategory to the $allProducts array
-         $allProducts = array_merge($allProducts, $subCategory->getProducts()->toArray());
-     }
+// Convertir en valeurs par défaut si null ou vide
+$minPrice = (!empty($minPrice) || $minPrice === '0') ? (int)$minPrice : 1;
+$maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
+    $brands = $request->query->all('brands');
+    $sort = $request->query->get('sort', 'popular');
+    $limit = max(1, (int)$request->query->get('limit', 20));
+    $page = max(1, (int)$request->query->get('page', 1));
+    
+    // Utilisez le repository pour récupérer directement les produits filtrés
+    // Cela évitera les problèmes de conversion entre Collection et Array
+    $qb = $productRepository->createQueryBuilder('p')
+        ->join('p.subCategories', 'sc')
+        ->join('sc.category', 'c')
+        ->where('c.id = :categoryId')
+        ->setParameter('categoryId', $category->getId());
+    
+    // Filtrer par sous-catégories si spécifié
+    if (!empty($subCategoryIds)) {
+        $qb->andWhere('sc.id IN (:subCategoryIds)')
+           ->setParameter('subCategoryIds', $subCategoryIds);
+    }
+    
+    // Filtrer par prix si défini
+    if (!empty($minPrice)) {
+        $qb->andWhere('p.price >= :minPrice')
+           ->setParameter('minPrice', $minPrice);
+    }
+    
+    if (!empty($maxPrice)) {
+        $qb->andWhere('p.price <= :maxPrice')
+           ->setParameter('maxPrice', $maxPrice);
+    }
+    
+    // Filtrer par marque si défini
+    if (!empty($brands)) {
+        $qb->andWhere('p.brand IN (:brands)')
+           ->setParameter('brands', $brands);
+    }
+    
+    // Appliquer le tri
+    switch ($sort) {
+        case 'price_low':
+            $qb->orderBy('p.price', 'ASC');
+            break;
+            
+        case 'price_high':
+            $qb->orderBy('p.price', 'DESC');
+            break;
+            
+        case 'position':
+            $qb->orderBy('p.id', 'ASC');
+            break;
+            
+       
+    }
+    
+    // Exécuter la requête pour obtenir le nombre total de produits
+    $countQb = clone $qb;
+    $totalProducts = count($countQb->getQuery()->getResult());
+    
+    // Appliquer la pagination
+    $qb->setFirstResult(($page - 1) * $limit)
+       ->setMaxResults($limit);
+    
+    $paginatedProducts = $qb->getQuery()->getResult();
+    $totalPages = ceil($totalProducts / $limit);
+    
+    // Récupérer les marques disponibles pour les filtres
+    $brandsQb = $productRepository->createQueryBuilder('p')
+        ->select('p.brand', 'COUNT(p.id) as brand_count')
+        ->join('p.subCategories', 'sc')
+        ->join('sc.category', 'c')
+        ->where('c.id = :categoryId')
+        ->setParameter('categoryId', $category->getId())
+        ->groupBy('p.brand')
+        ->orderBy('p.brand', 'ASC');
+    
+    $brandsResult = $brandsQb->getQuery()->getResult();
+    
+    $availableBrands = [];
+    foreach ($brandsResult as $brandResult) {
+        $availableBrands[] = [
+            'brand' => $brandResult['brand'],
+            'count' => $brandResult['brand_count']
+        ];
+    }
+
+    
     
     return $this->render('home/showCollectionProduct.html.twig', [
-        'categoryProducts' => $categoryProducts,
-        'categorieName' => $categorieName,
-        'allProducts' => $allProducts
+        'categoryProducts' => $category->getSubCategories(),
+        'categorieName' => $category->getName(),
+        'allProducts' => $paginatedProducts,
+        'selectedSubCategories' => $subCategoryIds,
+        'minPrice' => $minPrice,
+        'maxPrice' => $maxPrice,
+        'selectedBrands' => $brands,
+        'availableBrands' => $availableBrands,
+        'sort' => $sort,
+        'limit' => $limit,
+        'currentPage' => $page,
+        'totalPages' => $totalPages,
+        'totalProducts' => $totalProducts
     ]);
 }
 }

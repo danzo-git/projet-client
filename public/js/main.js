@@ -125,7 +125,7 @@
 		})
 	});
 
-	var priceInputMax = document.getElementById('price-max'),
+	var priceInputMax = document.getElementById('price-malx'),
 			priceInputMin = document.getElementById('price-min');
 
 	priceInputMax.addEventListener('change', function(){
@@ -150,12 +150,12 @@
 	var priceSlider = document.getElementById('price-slider');
 	if (priceSlider) {
 		noUiSlider.create(priceSlider, {
-			start: [1, 999],
+			start: [1, 100000],
 			connect: true,
 			step: 1,
 			range: {
 				'min': 1,
-				'max': 999
+				'max': 100000
 			}
 		});
 

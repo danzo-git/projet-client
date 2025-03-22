@@ -7,24 +7,20 @@
                 <li class="dropdown">
                     <a href="#">Categories <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Laptops</a></li>
-                        <li><a href="#">Smartphones</a></li>
-                        <li><a href="#">Cameras</a></li>
-                        <li><a href="#">Accessories</a></li>
-                        <li class="dropdown-submenu">
-                            <a href="#">More Categories <i class="fa fa-angle-right"></i></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Subcategory 1</a></li>
-                                <li><a href="#">Subcategory 2</a></li>
-                                <li><a href="#">Subcategory 3</a></li>
-                            </ul>
-                        </li>
+                        {% for category in global_categories %}
+                            <li class="dropdown-submenu">
+                                <a href="#">{{ category.name }} <i class="fa fa-angle-right"></i></a>
+                                {% if category.subCategories %}
+                                    <ul class="dropdown-menu submenu">
+                                        {% for subCategory in category.subCategories %}
+                                            <li><a href="{{path('app_filter',{'id':subCategory.id})}}">{{ subCategory.name }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
                     </ul>
                 </li>
-                <li><a href="#">Laptops</a></li>
-                <li><a href="#">Smartphones</a></li>
-                <li><a href="#">Cameras</a></li>
-                <li><a href="#">Accessories</a></li>
                 {% if is_granted("ROLE_ADMIN") %}
                     <li><a href="{{ path('app_admin_dashboard') }}">Dashboard</a></li>
                 {% endif %}
@@ -41,10 +37,13 @@
     background-color: #f9f9f9;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
+    z-index: 1000;
+    padding: 10px 0;
+    border-radius: 4px;
 }
 
-.dropdown:hover .dropdown-menu {
+/* Affichage du menu au survol */
+.dropdown:hover > .dropdown-menu {
     display: block;
 }
 
@@ -53,13 +52,53 @@
     position: relative;
 }
 
-.dropdown-submenu .dropdown-menu {
+.dropdown-submenu > .dropdown-menu {
     top: 0;
     left: 100%;
-    margin-top: -1px;
+    margin-top: -6px;
+    margin-left: 1px;
+    border-radius: 4px;
 }
 
-.dropdown-submenu:hover .dropdown-menu {
+/* Affichage du sous-menu au survol */
+.dropdown-submenu:hover > .dropdown-menu {
     display: block;
 }
+
+/* Style des éléments de menu */
+.dropdown-menu li {
+    position: relative;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 8px 15px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Ajout d'une petite marge pour éviter que les sous-menus disparaissent */
+.dropdown-submenu > a:after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Assurer que les sous-menus ne dépassent pas de la fenêtre */
+@media (max-width: 768px) {
+    .dropdown-submenu > .dropdown-menu {
+        left: 0;
+        top: 100%;
+    }
+}
 </style>
+
+<!-- Remarque: cette solution n'utilise pas de JavaScript pour éviter les erreurs,
+     elle s'appuie uniquement sur le CSS pour le comportement hover -->

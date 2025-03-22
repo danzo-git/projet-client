@@ -24,8 +24,8 @@ class Product
     #[ORM\Column]
     private ?int $price = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $taille = null;
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $taille = null;
 
     /**
      * @var Collection<int, SubCategory>
@@ -47,6 +47,9 @@ class Product
      */
     #[ORM\OneToMany(targetEntity: AddProductHistory::class, mappedBy: 'product')]
     private Collection $addProductHistories;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $brand = null;
     
 
 
@@ -98,12 +101,12 @@ class Product
         return $this;
     }
 
-    public function getTaille(): ?string
+    public function getTaille(): ?array
     {
         return $this->taille;
     }
 
-    public function setTaille(?string $taille): static
+    public function setTaille(?array $taille): static
     {
         $this->taille = $taille;
 
@@ -204,6 +207,18 @@ class Product
                 $addProductHistory->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getBrand(): ?string
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(?string $brand): static
+    {
+        $this->brand = $brand;
 
         return $this;
     }

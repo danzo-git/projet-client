@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Entity\SubCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
@@ -77,4 +78,41 @@ class ProductRepository extends ServiceEntityRepository
        
        return $products;
    }
+
+    /**
+     * Récupère les produits associés à une sous-catégorie.
+     */
+    /**
+     * Summary of findBySubCategory
+     * @param \App\Entity\SubCategory $subCategory
+     * @return array
+     */
+    public function findBySubCategory(SubCategory $subCategory): array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.subCategories', 's')
+            ->where('s.id = :subCategoryId')
+            ->setParameter('subCategoryId', $subCategory->getId())
+            ->orderBy('p.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Summary of findDistinctBrandsByCategory
+     * @param int $categoryId
+     * @return array
+     */
+    public function findDistinctBrandsByCategory(int $categoryId): array
+{
+    return $this->createQueryBuilder('p')
+        ->select('DISTINCT p.brand')
+        ->join('p.subCategories', 'sc')
+        ->join('sc.category', 'c')
+        ->where('c.id = :categoryId')
+        ->setParameter('categoryId', $categoryId)
+        ->orderBy('p.brand', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
 }
