@@ -9,6 +9,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -85,7 +86,8 @@ public function showCollectionProduct(
     Category $category, 
     Request $request, 
     ProductRepository $productRepository,
-    EntityManagerInterface $entityManager
+    EntityManagerInterface $entityManager,
+    PaginatorInterface $paginator
 ): Response {
     // Récupérer les paramètres de filtre
     $subCategoryIds = $request->query->all('subcategories');
@@ -98,7 +100,7 @@ $minPrice = (!empty($minPrice) || $minPrice === '0') ? (int)$minPrice : 1;
 $maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
     $brands = $request->query->all('brands');
     $sort = $request->query->get('sort', 'popular');
-    $limit = max(1, (int)$request->query->get('limit', 20));
+    $limit = max(1, (int)$request->query->get('limit', 10));
     $page = max(1, (int)$request->query->get('page', 1));
     
     // Utilisez le repository pour récupérer directement les produits filtrés
@@ -153,33 +155,16 @@ $maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
     $countQb = clone $qb;
     $totalProducts = count($countQb->getQuery()->getResult());
     
-    // Appliquer la pagination
-    $qb->setFirstResult(($page - 1) * $limit)
-       ->setMaxResults($limit);
     
-    $paginatedProducts = $qb->getQuery()->getResult();
-    $totalPages = ceil($totalProducts / $limit);
+   $Products = $qb->getQuery()->getResult();
     
-    // Récupérer les marques disponibles pour les filtres
-    $brandsQb = $productRepository->createQueryBuilder('p')
-        ->select('p.brand', 'COUNT(p.id) as brand_count')
-        ->join('p.subCategories', 'sc')
-        ->join('sc.category', 'c')
-        ->where('c.id = :categoryId')
-        ->setParameter('categoryId', $category->getId())
-        ->groupBy('p.brand')
-        ->orderBy('p.brand', 'ASC');
     
-    $brandsResult = $brandsQb->getQuery()->getResult();
-    
-    $availableBrands = [];
-    foreach ($brandsResult as $brandResult) {
-        $availableBrands[] = [
-            'brand' => $brandResult['brand'],
-            'count' => $brandResult['brand_count']
-        ];
-    }
-
+  
+    $paginatedProducts = $paginator->paginate(
+    $Products,
+    $page,
+    $limit
+);
     
     
     return $this->render('home/showCollectionProduct.html.twig', [
@@ -189,13 +174,13 @@ $maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
         'selectedSubCategories' => $subCategoryIds,
         'minPrice' => $minPrice,
         'maxPrice' => $maxPrice,
-        'selectedBrands' => $brands,
-        'availableBrands' => $availableBrands,
+        'brands' => $brands,
         'sort' => $sort,
         'limit' => $limit,
         'currentPage' => $page,
-        'totalPages' => $totalPages,
+       
         'totalProducts' => $totalProducts
     ]);
 }
+
 }

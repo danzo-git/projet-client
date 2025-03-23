@@ -64,22 +64,7 @@
 				<div class="col-md-12">
 					<div class="section-title">
 						<h3 class="title">Nouvelle Arrivage</h3>
-						{# <div class="section-nav">
-							<ul class="section-tab-nav tab-nav" id="nouveautes-tabs">
-								<li class="active">
-									<a data-toggle="tab" href="#tab1">Laptops</a>
-								</li>
-								<li>
-									<a data-toggle="tab" href="#tab1">Smartphones</a>
-								</li>
-								<li>
-									<a data-toggle="tab" href="#tab1">Cameras</a>
-								</li>
-								<li>
-									<a data-toggle="tab" href="#tab1">Accessories</a>
-								</li>
-							</ul>
-						</div> #}
+					
 					</div>
 				</div>
 				<!-- /section title -->
@@ -110,7 +95,7 @@
 													{% endfor %}
 												</p>
 												<h3 class="product-name">
-													<a href="#">{{newProduct.name}}</a>
+													<a href="{{path('app_product_show_customer',{'id':newProduct.id})}}">{{newProduct.name}}</a>
 												</h3>
 												<h4 class="product-price">{{newProduct.price}} fcfa
 													{# <del class="product-old-price">$990.00</del> #}

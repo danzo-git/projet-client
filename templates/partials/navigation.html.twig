@@ -11,9 +11,12 @@
                             <li class="dropdown-submenu">
                                 <a href="#">{{ category.name }} <i class="fa fa-angle-right"></i></a>
                                 {% if category.subCategories %}
+                                    
                                     <ul class="dropdown-menu submenu">
                                         {% for subCategory in category.subCategories %}
+                                           
                                             <li><a href="{{path('app_filter',{'id':subCategory.id})}}">{{ subCategory.name }}</a></li>
+                                          
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
