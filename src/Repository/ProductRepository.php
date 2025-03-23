@@ -115,4 +115,22 @@ class ProductRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
 }
+
+public function findByPriceBetween($minPrice, $maxPrice, $subCategoryId = null) {
+    $qb = $this->createQueryBuilder('p');
+    
+    // Filter by price
+    $qb->andWhere('p.price BETWEEN :minPrice AND :maxPrice')
+       ->setParameter('minPrice', $minPrice)
+       ->setParameter('maxPrice', $maxPrice);
+    
+    // If a subcategory is provided, filter by it too
+    if ($subCategoryId) {
+        $qb->innerJoin('p.subCategories', 's')
+           ->andWhere('s.id = :subCategoryId')
+           ->setParameter('subCategoryId', $subCategoryId);
+    }
+    
+    return $qb->getQuery()->getResult();
+}
 }

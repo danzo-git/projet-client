@@ -19,14 +19,16 @@ class SubCategory
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'subCategories')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?Category $category = null;
-
     /**
      * @var Collection<int, Product>
      */
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'subCategories')]
-    private Collection $products;
+  /**
+ * @var Collection<int, Product>
+ */
+#[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'subCategories', cascade: ["persist"])]
+private Collection $products;
 
     public function __construct()
     {

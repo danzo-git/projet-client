@@ -13,35 +13,35 @@
 			<!-- row -->
 	<div class="row">
     <!-- shop -->
-    {% for collectionProduct in collectionsByRandom %}
-	
-        <div class="col-md-4 col-xs-6">
-            <div class="shop">
-                <!-- Affichage de l'image du produit -->
-                <div class="shop-img">
-                    {% if collectionProduct.productImages is not empty %}
-                        <img src="{{ asset('uploads/' ~ collectionProduct.productImages[0].imagePath) }}" alt="{{ collectionProduct.name }}">
-                    {% else %}
-                        <img src="{{ asset('img/placeholder.png') }}" alt="No image available">
-                    {% endif %}   
-                </div>
+   {% for collectionProduct in collectionsByRandom %}
+    <div class="col-md-4 col-xs-6">
+        <div class="shop">
+            <!-- Affichage de l'image du produit -->
+            <div class="shop-img">
+                {% if collectionProduct.productImages is not empty %}
+                    <img src="{{ asset('uploads/' ~ collectionProduct.productImages[0].imagePath) }}" alt="{{ collectionProduct.name }}">
+                {% else %}
+                    <img src="{{ asset('img/placeholder.png') }}" alt="No image available">
+                {% endif %}   
+            </div>
 
-                <!-- Affichage du nom de la sous-catégorie -->
-                <div class="shop-body">
-                    <h3>Collection<br>  
-                    {% if collectionProduct.subCategories is not empty %}
-						{% set categorieName = collectionProduct.subCategories.getValues[0].getCategory.getName %}
-                        {{categorieName }}
-                    {% endif %}
-                    </h3>
-					{% set id = collectionProduct.subCategories.getValues[0].getCategory.id %}
-                    <a href="{{path('app_sub_category_show_collection_product',{'id':id})}}" class="cta-btn">Achetez maintenant ! <i class="fa fa-arrow-circle-right"></i></a>
-					
-                </div>
+            <!-- Affichage du nom de la sous-catégorie -->
+            <div class="shop-body">
+                <h3>Collection<br>  
+                {% if collectionProduct.subCategories is not empty and collectionProduct.subCategories.getValues() is not empty %}
+                    {% set categorieName = collectionProduct.subCategories.getValues()[0].getCategory().getName() %}
+                    {{ categorieName }}
+                {% endif %}
+                </h3>
+                
+                {% if collectionProduct.subCategories is not empty and collectionProduct.subCategories.getValues() is not empty %}
+                    {% set id = collectionProduct.subCategories.getValues()[0].getCategory().getId() %}
+                    <a href="{{ path('app_sub_category_show_collection_product', {'id': id}) }}" class="cta-btn">Achetez maintenant ! <i class="fa fa-arrow-circle-right"></i></a>
+                {% endif %}
             </div>
         </div>
-		
-    {% endfor %}
+    </div>
+{% endfor %}
     <!-- /shop -->
 	
 </div>

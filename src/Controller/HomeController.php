@@ -86,20 +86,20 @@ public function showCollectionProduct(
     Category $category, 
     Request $request, 
     ProductRepository $productRepository,
-    EntityManagerInterface $entityManager,
+    
     PaginatorInterface $paginator
 ): Response {
     // Récupérer les paramètres de filtre
     $subCategoryIds = $request->query->all('subcategories');
    // Dans votre méthode de contrôleur
-$minPrice = $request->query->get('price_min');
-$maxPrice = $request->query->get('price_max');
+    $minPrice = $request->query->get('price_min');
+    $maxPrice = $request->query->get('price_max');
 
 // Convertir en valeurs par défaut si null ou vide
 $minPrice = (!empty($minPrice) || $minPrice === '0') ? (int)$minPrice : 1;
 $maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
-    $brands = $request->query->all('brands');
-    $sort = $request->query->get('sort', 'popular');
+
+    // $brands = $request->query->all('brands');
     $limit = max(1, (int)$request->query->get('limit', 10));
     $page = max(1, (int)$request->query->get('page', 1));
     
@@ -128,28 +128,8 @@ $maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
            ->setParameter('maxPrice', $maxPrice);
     }
     
-    // Filtrer par marque si défini
-    if (!empty($brands)) {
-        $qb->andWhere('p.brand IN (:brands)')
-           ->setParameter('brands', $brands);
-    }
+  
     
-    // Appliquer le tri
-    switch ($sort) {
-        case 'price_low':
-            $qb->orderBy('p.price', 'ASC');
-            break;
-            
-        case 'price_high':
-            $qb->orderBy('p.price', 'DESC');
-            break;
-            
-        case 'position':
-            $qb->orderBy('p.id', 'ASC');
-            break;
-            
-       
-    }
     
     // Exécuter la requête pour obtenir le nombre total de produits
     $countQb = clone $qb;
@@ -174,8 +154,8 @@ $maxPrice = !empty($maxPrice) ? (int)$maxPrice : 1000000;
         'selectedSubCategories' => $subCategoryIds,
         'minPrice' => $minPrice,
         'maxPrice' => $maxPrice,
-        'brands' => $brands,
-        'sort' => $sort,
+        // 'brands' => $brands,
+    
         'limit' => $limit,
         'currentPage' => $page,
        
