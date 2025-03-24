@@ -10,7 +10,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 
 class CategoryRemovalListener
 {
-    public function preRemove(Category $category,  LifecycleEventArgs $args): void
+    public function preRemove(Category $category,  LifecycleEventArgs  $args): void
     {
         $entityManager = $args->getObjectManager();
         $productRepository = $entityManager->getRepository('App\Entity\Product');
