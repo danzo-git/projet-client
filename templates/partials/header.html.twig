@@ -82,107 +82,300 @@
 							</a>
 						</div>
 						<div class="dropdown">
-    <a class="dropdown-toggle open-cart-sidebar" data-toggle="dropdown" aria-expanded="false">
-        <i class="fa fa-shopping-cart"></i>
-        <span>Votre Panier</span>
-        <div class="qty">{{ app.session.get('cart')|length }}</div>
-    </a>
+                        <a class="dropdown-toggle open-cart-sidebar" data-toggle="dropdown" aria-expanded="true">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span>Votre Panier</span>
+                            <div class="qty">{{ app.session.get('cart')|length }}</div>
+                        </a>
+                        
+                        <div class="cart-dropdown">
+                            <div class="cart-header">
+                                <h4>Votre Panier ({{ app.session.get('cart')|length }})</h4>
+                            </div>
+                            
+                            <div class="cart-body">
+                                {% set cart = app.session.get('cart', []) %}
+                                {% if cart is not empty %}
+                                    {% set total = 0 %}
+                                    {% for id, quantity in cart %}
+                                        {% set product = get_product_by_id(id) %}
+                                        {% set total = total + (product.price * quantity) %}
+                                        
+                                        <div class="cart-item">
+                                            <div class="cart-item-img">
+                                                <img src="{{ asset('uploads/' ~ product.productImages[0].imagePath) }}" 
+                                                     alt="{{ product.name }}"
+                                                     onerror="this.src='{{ asset('img/placeholder-product.png') }}'">
+                                            </div>
+                                            <div class="cart-item-details">
+                                                <h5 class="cart-item-title">
+                                                    <a href="{{ path('app_product_show_customer', {'id': product.id}) }}">
+                                                        {{ product.name|u.truncate(20, '...') }}
+                                                    </a>
+                                                </h5>
+                                                <div class="cart-item-meta">
+                                                    <span class="cart-item-price">{{ product.price|number_format(0, ',', ' ') }} FCFA</span>
+                                                    <div class="cart-item-quantity">
+                                                        <button class="qty-minus" data-id="{{ product.id }}">-</button>
+                                                        <span class="qty-value">{{ quantity }}</span>
+                                                        <button class="qty-plus" data-id="{{ product.id }}">+</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button class="cart-item-remove" data-id="{{ product.id }}">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="cart-empty">
+                                        <i class="fa fa-shopping-cart"></i>
+                                        <p>Votre panier est vide</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if cart is not empty %}
+                            <div class="cart-footer">
+                                <div class="cart-total">
+                                    <span>Total:</span>
+                                    <span class="total-amount">{{ total|number_format(0, ',', ' ') }} FCFA</span>
+                                </div>
+                                <div class="cart-actions">
+                                    <a href="{{ path('app_cart') }}" class="btn btn-view-cart">
+                                        <i class="fa fa-shopping-basket"></i> Voir Panier
+                                    </a>
+                                    <a href="#" class="btn btn-checkout">
+                                        Commander <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="menu-toggle">
+                    <a href="#">
+                        <i class="fa fa-bars"></i>
+                        <span>Menu</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-							<div class="cart-dropdown-menu">
-								<div class="cart-list">
-									{% set cart = app.session.get('cart', []) %}
-									{% if cart is not empty %}
-										{% for id, quantity in cart %}
-											{% set product = get_product_by_id(id) %}
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="{{ asset('uploads/' ~ product.productImages[0].imagePath) }}" alt="{{ product.name }}">
-												</div>
-												<div class="product-body">
-													<h3 class="product-name">
-														<a href="{{ path('app_product_show_customer', {'id': product.id}) }}">{{ product.name }}</a>
-													</h3>
-													<h4 class="product-price">{{ product.price }}
-														FCFA</h4>
-												</div>
-												<button class="delete">
-													<i class="fa fa-close"></i>
-												</button>
-											</div>
-										{% endfor %}
-									{% else %}
-										<p class="text-center">Votre panier est vide</p>
-									{% endif %}
-								</div>
 
-								<div class="cart-summary">
-									<small>{{ cart|length }}
-										Article(s) sélectionné(s)</small>
-									<h5>TOTAL:
-										{% set total = 0 %}
-										{% for id, quantity in cart %}
-											{% set product = get_product_by_id(id) %}
-											{% set total = total + product.price %}
-										{% endfor %}
-										{{ total }}
-										FCFA
-									</h5>
-								</div>
-								<div class="cart-btns">
-									<a href="{{ path('app_cart') }}" class="btn btn-primary">Voir Panier</a>
-									<a href="#" class="btn btn-primary">Paiement</a>
-								</div>
-							</div>
-						</div>
-					</div>
-					{# <div class="menu-toggle">
-						<a href="#">
-							<i class="fa fa-bars"></i>
-							<span>Menu</span>
-						</a>
-					</div> #}
-				</div>
-			</div>
-			<!-- /ACCOUNT -->
-		</div>
-	</div>
-</div>
-<!-- /MAIN HEADER --></header><style>
-.cart-dropdown-menu {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    width: 300px;
-    background: white;
-    border: 1px solid #e4e7ed;
-    z-index: 99;
-    padding: 15px;
-    display: none;
-}
-
-.cart-dropdown:hover .cart-dropdown-menu {
-    display: block;
-}
+<style>
+    /* Styles pour le panier amélioré */
+    .cart-dropdown {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        width: 350px;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        z-index: 1000;
+        display: none;
+    }
+    
+    .dropdown:hover .cart-dropdown {
+        display: block;
+    }
+    
+    .cart-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        background: #f9f9f9;
+    }
+    
+    .cart-header h4 {
+        margin: 0;
+        font-size: 16px;
+        color: #333;
+    }
+    
+    .cart-body {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 0 15px;
+    }
+    
+    .cart-item {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #f5f5f5;
+        align-items: center;
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    
+    .cart-item-img {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+    }
+    
+    .cart-item-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    
+    .cart-item-details {
+        flex: 1;
+    }
+    
+    .cart-item-title {
+        margin: 0 0 5px 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .cart-item-title a {
+        color: #333;
+    }
+    
+    .cart-item-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .cart-item-price {
+        font-weight: 600;
+        color: #D10024;
+    }
+    
+    .cart-item-quantity {
+        display: flex;
+        align-items: center;
+    }
+    
+    .cart-item-quantity button {
+        width: 25px;
+        height: 25px;
+        background: #f5f5f5;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .cart-item-quantity .qty-value {
+        margin: 0 10px;
+    }
+    
+    .cart-item-remove {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    
+    .cart-item-remove:hover {
+        color: #D10024;
+    }
+    
+    .cart-empty {
+        text-align: center;
+        padding: 30px 0;
+        color: #999;
+    }
+    
+    .cart-empty i {
+        font-size: 40px;
+        margin-bottom: 15px;
+        display: block;
+    }
+    
+    .cart-footer {
+        padding: 15px;
+        background: #f9f9f9;
+        border-top: 1px solid #eee;
+    }
+    
+    .cart-total {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-weight: 600;
+        font-size: 16px;
+    }
+    
+    .total-amount {
+        color: #D10024;
+    }
+    
+    .cart-actions {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .btn-view-cart, .btn-checkout {
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .btn-view-cart {
+        background: #f5f5f5;
+        color: #333;
+    }
+    
+    .btn-checkout {
+        background: #D10024;
+        color: white;
+    }
+    
+    .btn-view-cart i, .btn-checkout i {
+        margin-right: 5px;
+    }
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    let cartDropdown = document.querySelector(".dropdown");
-    let cartMenu = document.querySelector(".cart-dropdown-menu");
-
-    cartDropdown.addEventListener("click", function (event) {
-        event.stopPropagation(); // Empêche la fermeture immédiate
-        cartMenu.style.display = (cartMenu.style.display === "block") ? "none" : "block";
+// Script pour gérer les interactions du panier
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des quantités
+    document.querySelectorAll('.qty-plus').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            updateQuantity(productId, 1);
+        });
     });
-
-    // Cacher le menu si on clique ailleurs
-    document.addEventListener("click", function () {
-        cartMenu.style.display = "none";
+    
+    document.querySelectorAll('.qty-minus').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            updateQuantity(productId, -1);
+        });
     });
-
-    cartMenu.addEventListener("click", function (event) {
-        event.stopPropagation(); // Empêche la fermeture en cliquant sur le menu
+    
+    // Gestion de la suppression
+    document.querySelectorAll('.cart-item-remove').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            removeFromCart(productId);
+        });
     });
+    
+    function updateQuantity(productId, change) {
+        // Ici, vous devriez faire une requête AJAX pour mettre à jour la quantité
+        console.log(`Mettre à jour le produit ${productId} avec un changement de ${change}`);
+        // Après la mise à jour réussie, recharger le panier ou mettre à jour le DOM
+    }
+    
+    function removeFromCart(productId) {
+        // Ici, vous devriez faire une requête AJAX pour supprimer l'article
+        console.log(`Supprimer le produit ${productId} du panier`);
+        // Après la suppression réussie, recharger le panier ou mettre à jour le DOM
+    }
 });
 </script>
-
