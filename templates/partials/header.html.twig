@@ -1,4 +1,5 @@
 <header>
+ <meta name="csrf-token" content="{{ csrf_token('cart') }}">
 	<!-- TOP HEADER -->
 	<div id="top-header">
 		<div class="container">
@@ -82,6 +83,7 @@
 							</a>
 						</div>
 						<div class="dropdown">
+                         {% include 'layouts/_flash_message.html.twig' %}
                         <a class="dropdown-toggle open-cart-sidebar" data-toggle="dropdown" aria-expanded="true">
                             <i class="fa fa-shopping-cart"></i>
                             <span>Votre Panier</span>
@@ -90,10 +92,12 @@
                         
                         <div class="cart-dropdown">
                             <div class="cart-header">
+                            <meta name="csrf-token" content="{{ csrf_token('cart') }}">
                                 <h4>Votre Panier ({{ app.session.get('cart')|length }})</h4>
                             </div>
                             
                             <div class="cart-body">
+                            
                                 {% set cart = app.session.get('cart', []) %}
                                 {% if cart is not empty %}
                                     {% set total = 0 %}
@@ -101,7 +105,7 @@
                                         {% set product = get_product_by_id(id) %}
                                         {% set total = total + (product.price * quantity) %}
                                         
-                                        <div class="cart-item">
+                                       <div class="cart-item" data-id="{{ product.id }}">
                                             <div class="cart-item-img">
                                                 <img src="{{ asset('uploads/' ~ product.productImages[0].imagePath) }}" 
                                                      alt="{{ product.name }}"
@@ -341,18 +345,20 @@
 </style>
 
 <script>
-// Script pour gérer les interactions du panier
 document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des quantités
+    // Gestion des quantités +
     document.querySelectorAll('.qty-plus').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
             const productId = this.dataset.id;
             updateQuantity(productId, 1);
         });
     });
     
+    // Gestion des quantités -
     document.querySelectorAll('.qty-minus').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
             const productId = this.dataset.id;
             updateQuantity(productId, -1);
         });
@@ -360,22 +366,103 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Gestion de la suppression
     document.querySelectorAll('.cart-item-remove').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
             const productId = this.dataset.id;
             removeFromCart(productId);
         });
     });
     
     function updateQuantity(productId, change) {
-        // Ici, vous devriez faire une requête AJAX pour mettre à jour la quantité
-        console.log(`Mettre à jour le produit ${productId} avec un changement de ${change}`);
-        // Après la mise à jour réussie, recharger le panier ou mettre à jour le DOM
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const quantityElement = document.querySelector(`.qty-plus[data-id="${productId}"]`).closest('.cart-item-quantity').querySelector('.qty-value');
+        const currentQty = parseInt(quantityElement.textContent);
+        const newQty = currentQty + change;
+        
+        if (newQty < 1) {
+            removeFromCart(productId);
+            return;
+        }
+        
+        fetch(`/cart/update/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken
+            },
+            body: `quantity=${newQty}&_token=${csrfToken}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mise à jour de la quantité affichée
+                quantityElement.textContent = newQty;
+                
+                // Mise à jour du total de l'article
+                const itemPrice = parseFloat(document.querySelector(`.cart-item[data-id="${productId}"] .cart-item-price`).textContent.replace(/[^0-9.-]+/g,""));
+                const itemTotal = itemPrice * newQty;
+                document.querySelector(`.cart-item[data-id="${productId}"] .cart-item-price`).textContent = 
+                    itemTotal.toLocaleString('fr-FR') + ' FCFA';
+                
+                // Mise à jour du total global
+                updateCartTotals(data.cartTotal, data.cartCount);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
     
     function removeFromCart(productId) {
-        // Ici, vous devriez faire une requête AJAX pour supprimer l'article
-        console.log(`Supprimer le produit ${productId} du panier`);
-        // Après la suppression réussie, recharger le panier ou mettre à jour le DOM
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const cartItem = document.querySelector(`.cart-item[data-id="${productId}"]`);
+        
+        fetch(`/cart/remove/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken
+            },
+            body: `_token=${csrfToken}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Suppression de l'élément du DOM
+                cartItem.remove();
+                
+                // Mise à jour du compteur et du total
+                updateCartTotals(data.cartTotal, data.cartCount);
+                
+                // Si le panier est vide, afficher le message
+                if (data.cartCount === 0) {
+                    document.querySelector('.cart-body').innerHTML = `
+                        <div class="cart-empty">
+                            <i class="fa fa-shopping-cart"></i>
+                            <p>Votre panier est vide</p>
+                        </div>
+                    `;
+                    document.querySelector('.cart-footer').style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    function updateCartTotals(total, count) {
+        // Mise à jour du compteur dans l'icône du panier
+        document.querySelectorAll('.header-ctn .qty').forEach(el => {
+            el.textContent = count;
+        });
+        
+        // Mise à jour du nombre d'articles dans le header du dropdown
+        document.querySelector('.cart-header h4').textContent = `Votre Panier (${count})`;
+        
+        // Mise à jour du total global si visible
+        const totalElement = document.querySelector('.total-amount');
+        if (totalElement) {
+            totalElement.textContent = total.toLocaleString('fr-FR') + ' FCFA';
+        }
     }
 });
 </script>

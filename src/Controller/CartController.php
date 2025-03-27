@@ -55,31 +55,66 @@ class CartController extends AbstractController
         return $this->redirectToRoute('app_home');
     }
 
-    #[Route('/cart/remove/{id}', name: 'app_cart_remove', methods: ['GET'])]
-    public function removeFromCart($id, SessionInterface $session): Response
-    {
-        $cart = $session->get('cart', []);
-        unset($cart[$id]);
-        $session->set('cart', $cart);
-        
-        $this->addFlash('success', 'Produit retiré du panier');
-        return $this->redirectToRoute('app_cart');
-    }
-
     #[Route('/cart/update/{id}', name: 'app_cart_update', methods: ['POST'])]
-    public function updateQuantity($id, Request $request, SessionInterface $session): Response
-    {
-        $cart = $session->get('cart', []);
-        $quantity = $request->request->get('quantity');
-        
-        if ($quantity > 0) {
-            $cart[$id] = $quantity;
-        } else {
-            unset($cart[$id]);
-        }
-        
-        $session->set('cart', $cart);
-        
-        return $this->redirectToRoute('app_cart');
+public function updateQuantity($id, Request $request, SessionInterface $session, ProductRepository $productRepository): Response
+{
+    $cart = $session->get('cart', []);
+    $quantity = (int)$request->request->get('quantity');
+    
+    if (!isset($cart[$id])) {
+        return $this->json(['success' => false, 'message' => 'Produit non trouvé'], 404);
     }
+    
+    $product = $productRepository->find($id);
+    if (!$product) {
+        return $this->json(['success' => false, 'message' => 'Produit non trouvé'], 404);
+    }
+    
+    if ($quantity > 0) {
+        $cart[$id] = $quantity;
+    } else {
+        unset($cart[$id]);
+    }
+    
+    $session->set('cart', $cart);
+    
+    // Calcul du nouveau total
+    $total = 0;
+    foreach ($cart as $id => $qty) {
+        $product = $productRepository->find($id);
+        $total += $product->getPrice() * $qty;
+    }
+    
+    return $this->json([
+        'success' => true,
+        'cartTotal' => $total,
+        'cartCount' => count($cart)
+    ]);
+}
+
+#[Route('/cart/remove/{id}', name: 'app_cart_remove', methods: ['POST'])]
+public function removeFromCart($id, Request $request, SessionInterface $session, ProductRepository $productRepository): Response
+{
+    $cart = $session->get('cart', []);
+    
+    if (!isset($cart[$id])) {
+        return $this->json(['success' => false, 'message' => 'Produit non trouvé'], 404);
+    }
+    
+    unset($cart[$id]);
+    $session->set('cart', $cart);
+    
+    // Calcul du nouveau total
+    $total = 0;
+    foreach ($cart as $id => $qty) {
+        $product = $productRepository->find($id);
+        $total += $product->getPrice() * $qty;
+    }
+    
+    return $this->json([
+        'success' => true,
+        'cartTotal' => $total,
+        'cartCount' => count($cart)
+    ]);
+}
 }
