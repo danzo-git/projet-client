@@ -1,0 +1,241 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RTC - checkout{% endblock %}
+
+{% block content %}
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Billing Details -->
+                <div class="billing-details  ">
+                    <div class="section-title mb-4">
+                        <h3 class="title">Adresse de facturation</h3>
+                    </div>
+                    {{ form_start(form, { attr: { class: 'form-horizontal' } }) }}
+                    
+                    <!-- Prénom -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.firstName, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.firstName, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Prénom',
+                                autocomplete: 'given-name'
+                            } 
+                        }) }}
+                        {{ form_errors(form.firstName) }}
+                    </div>
+                    
+                    <!-- Nom -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.lastName, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.lastName, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Nom',
+                                autocomplete: 'family-name'
+                            } 
+                        }) }}
+                        {{ form_errors(form.lastName) }}
+                    </div>
+                    
+                    <!-- Adresse -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.address, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.address, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Adresse',
+                                autocomplete: 'street-address'
+                            } 
+                        }) }}
+                        {{ form_errors(form.address) }}
+                    </div>
+                    
+                    <!-- Ville -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.city, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.city, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Ville',
+                                autocomplete: 'address-level2'
+                            } 
+                        }) }}
+                        {{ form_errors(form.city) }}
+                    </div>
+                    
+                    <!-- Téléphone (Format Ivoirien) -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.phone, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.phone, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: '+22501020304',
+                                type: 'tel',
+                                pattern: '^\+225[0-9]{8}$',
+                                title: 'Format: +225 suivi de 8 chiffres (ex: +22501020304)',
+                                autocomplete: 'tel'
+                            } 
+                        }) }}
+                        <small class="form-text text-muted">Format requis: +225XXXXXXXX (8 chiffres)</small>
+                        {{ form_errors(form.phone) }}
+                    </div>
+                    
+                    <!-- Adresse complémentaire -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.additionalAddress, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.additionalAddress, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Complément d\'adresse (Optionnel)'
+                            } 
+                        }) }}
+                    </div>
+                    
+                    <!-- Bouton de soumission -->
+                    <div class="form-group mt-4">
+                        <button type="submit" class="primary-btn btn-block">Continuer vers le paiement</button>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                </div>
+                <!-- /Billing Details -->
+            </div>
+
+            <!-- Order Details -->
+            <div class="col-md-6">
+                <div class="order-details  p-4">
+                    <div class="section-title text-center mb-4">
+                        <h3 class="title">Votre Commande</h3>
+                    </div>
+                    <div class="order-summary">
+                        <div class="order-col d-flex justify-content-between mb-3">
+                            <div><strong>PRODUIT</strong></div>
+                            <div><strong>TOTAL</strong></div>
+                        </div>
+                        <div class="order-products">
+                        {% for cartInfo in cartInfos  %}
+                        
+                        {% set ImageProducts = cartInfo.product.productImages %}
+                        
+                            <div class="order-col d-flex justify-content-between mb-2">
+                            
+                          
+                          
+                                <div>{{cartInfo.product.name}} x {{cartInfo.quantity}}
+                                    <br/>
+                                      <div class="cart-item-img">
+                                                <img src="{{ asset('uploads/' ~ ImageProducts[0].imagePath) }}" 
+                                                     alt="{{ cartInfo.product.name }}"
+                                                     onerror="this.src='{{ asset('img/placeholder-product.png') }}'">
+                                            </div>
+                                </div>
+                                <div>{{cartInfo.product.price}} fcfa</div>
+                            </div>
+                          {% endfor %} 
+                        </div>
+                        <hr class="my-3">
+                        <div class="order-col d-flex justify-content-between mb-2">
+                            <div>Frais de livraison</div>
+                            <div><strong class="text-success shipping-cost"></strong> fcfa</div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="order-col d-flex justify-content-between mb-3">
+                            <div><strong>TOTAL</strong></div>
+                            <div><strong class="order-total text-primary">{{total}} </strong></div>
+                        </div>
+                    </div>
+                    <div class="payment-method mt-4">
+                        <h4 class="mb-3">Méthode de paiement</h4>
+                        <div class="input-radio mb-3">
+                            <input type="radio" name="payment" id="payment-1">
+                            <label for="payment-1">
+                                <span></span>
+                                Virement bancaire
+                            </label>
+                            <div class="caption">
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            </div>
+                        </div>
+                        <div class="input-radio mb-3">
+                            <input type="radio" name="payment" id="payment-2">
+                            <label for="payment-2">
+                                <span></span>
+                                Paiement par Orange Money
+                            </label>
+                            <div class="caption">
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            </div>
+                        </div>
+                        <div class="input-radio mb-3">
+                            <input type="radio" name="payment" id="payment-3">
+                            <label for="payment-3">
+                                <span></span>
+                               Paiement a la livraison
+                            </label>
+                            <div class="caption">
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-checkbox mt-4">
+                        <input type="checkbox" id="terms">
+                        <label for="terms">
+                            <span></span>
+                            J'ai lu et j'accepte les <a href="#">conditions générales</a>
+                        </label>
+                    </div>
+                    <a href="#" class="primary-btn order-submit btn-block mt-4">Passer la commande</a>
+                </div>
+                <!-- /Order Details -->
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /SECTION -->
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function(){
+        const citySelector=$('#order_city');
+        cityValue= citySelector.val();
+        const url=`http://127.0.0.1:8000/city/${cityValue}/shipping/cost`
+
+        function ajaxRequest(url){
+             $.ajax({
+            url:url,
+            type:'GET',
+            success:function(response){
+                const newResponse=JSON.parse(response);
+                    if (parseInt(newResponse.status)===200)
+                    $('.shipping-cost').text(newResponse.content)
+                   
+                   
+                   const orderArticle= parseInt($('.order-total').text())
+                   const orderDelivery= parseInt($('.shipping-cost').text())
+
+                $('.order-total').text(orderArticle+ orderDelivery)
+                   // console.log()
+            },
+            error:function(xhr,status,error){
+
+            
+            }
+
+          
+        }) 
+        }
+       ajaxRequest(url)
+          citySelector.on('change',function(){
+            const updateUrl=`http://127.0.0.1:8000/city/${$(this).val()}/shipping/cost`;
+                 ajaxRequest(updateUrl)
+            })
+    })
+</script>
+{% endblock %}

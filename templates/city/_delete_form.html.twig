@@ -1,10 +1,9 @@
-
-<form method="post" action="{{ path('app_sub_category_delete', {'id': sub_category.id}) }}" onsubmit="return confirmDelete(evt)">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sub_category.id) }}">
+<form method="post" action="{{ path('app_city_delete', {'id': city.id}) }}" onsubmit="return confirmDelete(event)">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ city.id) }}">
     <button class="btn"><i class= "fa fa-trash"></i></button>
 </form>
 <script>
-    function confirmDelete(evt) {
+    function confirmDelete(event) {
         event.preventDefault();
         Swal.fire({
             title: "Êtes-vous sûr ?",

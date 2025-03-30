@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ city.name }} - Détails{% endblock %}
+
+{% block content %}
+    <div class="city-container">
+        <div class="city-header">
+            <h1 class="city-title">{{ city.name }}</h1>
+            <div class="city-actions">
+                <a href="{{ path('app_city_index') }}" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+                <a href="{{ path('app_city_edit', {'id': city.id}) }}" class="btn btn-edit">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                {{ include('city/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        <div class="city-details">
+            <div class="detail-card">
+                <div class="detail-header">
+                  <h2 style="color: white; font-style: italic;">Informations</h2>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-row">
+                        <span class="detail-label">ID :</span>
+                        <span class="detail-value">{{ city.id }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Nom :</span>
+                        <span class="detail-value">{{ city.name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Prix :</span>
+                        <span class="detail-value">{{ city.price }} fcfa</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Complément :</span>
+                        <span class="detail-value">{{ city.complement }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .city-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .city-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .city-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .city-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background-color: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-back:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-edit {
+            background-color: #3498db;
+            color: white;
+            border: 1px solid #2980b9;
+        }
+
+        .btn-edit:hover {
+            background-color: #2980b9;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .detail-header {
+            background-color:rgb(227, 35, 35);
+            color: white;
+            padding: 1rem;
+        }
+
+        .detail-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .detail-body {
+            padding: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 150px;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: #495057;
+        }
+
+        .delete-form {
+            display: inline;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .city-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .city-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .detail-label {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
