@@ -102,7 +102,7 @@
                         <button type="submit" class="primary-btn btn-block">Continuer vers le paiement</button>
                     </div>
                     
-                    {{ form_end(form) }}
+                    
                 </div>
                 <!-- /Billing Details -->
             </div>
@@ -152,16 +152,7 @@
                     </div>
                     <div class="payment-method mt-4">
                         <h4 class="mb-3">Méthode de paiement</h4>
-                        <div class="input-radio mb-3">
-                            <input type="radio" name="payment" id="payment-1">
-                            <label for="payment-1">
-                                <span></span>
-                                Virement bancaire
-                            </label>
-                            <div class="caption">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                            </div>
-                        </div>
+                       
                         <div class="input-radio mb-3">
                             <input type="radio" name="payment" id="payment-2">
                             <label for="payment-2">
@@ -174,6 +165,7 @@
                         </div>
                         <div class="input-radio mb-3">
                             <input type="radio" name="payment" id="payment-3">
+                            {{ form_row(form.paymentOnDelivery) }}
                             <label for="payment-3">
                                 <span></span>
                                Paiement a la livraison
@@ -192,9 +184,11 @@
                     </div>
                     <a href="#" class="primary-btn order-submit btn-block mt-4">Passer la commande</a>
                 </div>
+              
                 <!-- /Order Details -->
             </div>
         </div>
+    {{ form_end(form) }}
         <!-- /row -->
     </div>
     <!-- /container -->

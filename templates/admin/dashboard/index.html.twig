@@ -105,6 +105,7 @@
     </div>
     
     <!-- Dernières commandes -->
+
     <div class="row mb-4">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -119,6 +120,8 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Client</th>
+                                    <th>Addresse</th>
+                                    <th>Adresse Complementaire</th>
                                     <th>Date</th>
                                     <th>Montant</th>
                                     <th>Statut</th>
@@ -126,40 +129,27 @@
                                 </tr>
                             </thead>
                             <tbody>
+                             {% for order in orders  %}
                                 <tr>
-                                    <td>#12345</td>
-                                    <td>Jean Dupont</td>
-                                    <td>15/03/2025</td>
-                                    <td>129,99€</td>
+                               
+                                    <td>{{order.id}}</td>
+                                    <td>{{order.firstName}} - {{ order.lastName }}</td>
+                                     <td>{{order.address}}</td>
+                                       <td>{{order.additionalAddress}}</td>
+
+                                    <td>{{order.createdAt|date('d-m-y-h:i')}}</td>
+                                    <td>{{order.totalprice + order.city.price }}</td>
+                                   
                                     <td><span class="badge bg-success">Livré</span></td>
-                                    <td><a href="#" class="btn btn-sm btn-outline-secondary">Détails</a></td>
+                                    <td><a href="{{path('app_admin_order',{'id':order.id})}}" class="btn btn-sm btn-outline-secondary">Détails</a></td>
+                               
                                 </tr>
-                                <tr>
-                                    <td>#12344</td>
-                                    <td>Marie Martin</td>
-                                    <td>14/03/2025</td>
-                                    <td>89,50€</td>
-                                    <td><span class="badge bg-warning text-dark">En traitement</span></td>
-                                    <td><a href="#" class="btn btn-sm btn-outline-secondary">Détails</a></td>
-                                </tr>
-                                <tr>
-                                    <td>#12343</td>
-                                    <td>Pierre Durand</td>
-                                    <td>13/03/2025</td>
-                                    <td>249,99€</td>
-                                    <td><span class="badge bg-info">Expédié</span></td>
-                                    <td><a href="#" class="btn btn-sm btn-outline-secondary">Détails</a></td>
-                                </tr>
-                                <tr>
-                                    <td>#12342</td>
-                                    <td>Sophie Bernard</td>
-                                    <td>12/03/2025</td>
-                                    <td>59,99€</td>
-                                    <td><span class="badge bg-danger">Annulé</span></td>
-                                    <td><a href="#" class="btn btn-sm btn-outline-secondary">Détails</a></td>
-                                </tr>
+                                 {% endfor %}
+                             
+                               
                             </tbody>
                         </table>
+                        {{knp_pagination_render(orders,'partials/pagination.html.twig')}}
                     </div>
                 </div>
             </div>

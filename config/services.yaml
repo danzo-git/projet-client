@@ -23,6 +23,10 @@ services:
     App\EventListener\CategoryDeletionListener:
         tags:
             - { name: 'doctrine.orm.entity_listener' }
+    
+    App\EntityListener\OrderEntityListener:
+        tags:
+            - { name: 'doctrine.orm.entity_listener', event: 'prePersist', entity: 'App\Entity\Order' }
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

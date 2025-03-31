@@ -3,10 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+use App\EntityListener\OrderEntityListener;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ORM\EntityListeners([OrderEntityListener::class])]
 class Order
 {
     #[ORM\Id]
@@ -30,10 +35,27 @@ class Order
     private ?City $city = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $additionalAddress = null;
+
+    #[ORM\Column]
+    private ?bool $paymentOnDelivery = null;
+
+    /**
+     * @var Collection<int, OrderProduct>
+     */
+    #[ORM\OneToMany(targetEntity: OrderProduct::class, mappedBy: '_order', orphanRemoval: true)]
+    private Collection $orderProducts;
+
+    #[ORM\Column]
+    private ?int $totalPrice = null;
+
+    public function __construct()
+    {
+        $this->orderProducts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -100,15 +122,14 @@ class Order
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setCreatedAt(DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -120,6 +141,60 @@ class Order
     public function setAdditionalAddress(?string $additionalAddress): static
     {
         $this->additionalAddress = $additionalAddress;
+
+        return $this;
+    }
+
+    public function isPaymentOnDelivery(): ?bool
+    {
+        return $this->paymentOnDelivery;
+    }
+
+    public function setPaymentOnDelivery(bool $paymentOnDelivery): static
+    {
+        $this->paymentOnDelivery = $paymentOnDelivery;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderProduct>
+     */
+    public function getOrderProducts(): Collection
+    {
+        return $this->orderProducts;
+    }
+
+    public function addOrderProduct(OrderProduct $orderProduct): static
+    {
+        if (!$this->orderProducts->contains($orderProduct)) {
+            $this->orderProducts->add($orderProduct);
+            $orderProduct->setOrder($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderProduct(OrderProduct $orderProduct): static
+    {
+        if ($this->orderProducts->removeElement($orderProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($orderProduct->getOrder() === $this) {
+                $orderProduct->setOrder(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTotalPrice(): ?int
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(int $totalPrice): static
+    {
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }
