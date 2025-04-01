@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Order;
 use App\Repository\OrderRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Dom\Entity;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,5 +43,24 @@ class DashboardController extends AbstractController
         return $this->render('admin/dashboard/order/details_order.html.twig', [
             'order' => $order
         ]);
+    }
+
+    #[Route('/order/{id}/complete', name: 'app_admin_order_isComplete', methods: ['GET'])]
+    public function  editOrder(Order $order ,EntityManagerInterface  $entityManager): Response
+    {
+        $order=$this->orderRepository->find($order->getId());
+        $order->setIsCompleted(true);
+        $entityManager->flush();
+        $this->addFlash('success', 'La commande a bien été complétée');
+
+        return $this->redirectToRoute('app_admin_dashboard');
+    }
+
+    #[Route('/order/{id}/delete', name: 'app_admin_order_delete', methods: ['GET'])]
+    public function  deleteOrder(Order $order ,EntityManagerInterface  $entityManager): Response{
+        $entityManager->remove($order);
+        $entityManager->flush();
+        $this->addFlash('success', 'La commande a bien été supprimée');
+        return $this->redirectToRoute('app_admin_dashboard');
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\City;
 use App\Entity\Order;
 use App\Entity\OrderProduct;
 use App\Form\OrderType;
+use App\Repository\OrderRepository;
 use App\Service\ServiceCart;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +17,16 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class OrderController extends AbstractController
 {
+    private $orderRepository;
     private $entityManager;
     public function __construct(
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        OrderRepository $orderRepository
+        
     )
     {
         $this->entityManager = $entityManager;
+        $this->orderRepository = $orderRepository;
     }
     #[Route('/order', name: 'app_order')]
     public function index(Request $request,
@@ -71,4 +76,7 @@ final class OrderController extends AbstractController
 
         return new Response(json_encode(['status' => 200, "message"=>"success",'content' => $cityShippingCost]));
     }
+
+
+   
 }

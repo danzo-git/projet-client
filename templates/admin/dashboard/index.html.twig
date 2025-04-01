@@ -114,6 +114,8 @@
                     <a href="#" class="btn btn-sm btn-outline-primary">Voir toutes</a>
                 </div>
                 <div class="card-body">
+		{% include 'layouts/_flash_message.html.twig' %}
+
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -126,6 +128,7 @@
                                     <th>Montant</th>
                                     <th>Statut</th>
                                     <th>Actions</th>
+                                    <th>delivered</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -140,9 +143,17 @@
                                     <td>{{order.createdAt|date('d-m-y-h:i')}}</td>
                                     <td>{{order.totalprice + order.city.price }}</td>
                                    
-                                    <td><span class="badge bg-success">Livré</span></td>
+                                    <td><span class="badge bg-success">{{order.isCompleted ? "Livré " : "En cours"}}</span></td>
                                     <td><a href="{{path('app_admin_order',{'id':order.id})}}" class="btn btn-sm btn-outline-secondary">Détails</a></td>
-                               
+
+                                    <td>
+                                    {% if order.isCompleted is null %}
+                                    <a href="{{path('app_admin_order_isComplete',{'id':order.id})}}"> <i class="fas fa-truck"></i></a>
+                                    {% else %}
+                                    <a href="{{path('app_admin_order_delete',{'id':order.id})}}"> <i class="fas fa-trash"></i></a>
+
+                                    {% endif %}
+                                    </td>
                                 </tr>
                                  {% endfor %}
                              
