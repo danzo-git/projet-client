@@ -6,6 +6,8 @@ use App\Entity\Order;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Dom\Entity;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,9 +42,23 @@ class DashboardController extends AbstractController
     #[Route('/order/{id}', name: 'app_admin_order', methods: ['GET'])]
     public function  showOrder(Order $order): Response
     {
+        // $pdfOptions = new Options();
+        // $pdfOptions->set('defaultFont', 'Arial');
+        // $dompdf = new Dompdf($pdfOptions);
+        // $html = $this->renderView('admin/dashboard/order/details_order.html.twig', [
+        //     'order' => $order
+        // ]);
+        // $dompdf->loadHtml($html);
+        // $dompdf->render();
+        // $pdf = $dompdf->output();
+        // $response = new Response($pdf);
+        // $response->headers->set('Content-Type', 'application/pdf');
+        // $response->headers->set('Content-Disposition', 'inline; filename="order".$order->getfirstname().".pdf"');
         return $this->render('admin/dashboard/order/details_order.html.twig', [
             'order' => $order
         ]);
+
+        //return $response;
     }
 
     #[Route('/order/{id}/complete', name: 'app_admin_order_isComplete', methods: ['GET'])]
@@ -62,5 +78,22 @@ class DashboardController extends AbstractController
         $entityManager->flush();
         $this->addFlash('success', 'La commande a bien été supprimée');
         return $this->redirectToRoute('app_admin_dashboard');
+    }
+
+    #[Route('/order/{id}/print', name: 'app_admin_order_print', methods: ['GET'])]
+    public function  printOrder(Order $order): Response{
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($pdfOptions);
+        $html = $this->renderView('admin/dashboard/order/print.html.twig', [
+            'order' => $order
+        ]);
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        $pdf = $dompdf->output();
+        $response = new Response($pdf);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'inline; filename="order".$order->getfirstname().".pdf"');
+        return $response;
     }
 }

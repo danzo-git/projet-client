@@ -7,8 +7,8 @@
     <!-- En-tête de la commande -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">Commande #{{ order.id }}</h3>
-            <span class="badge bg-light text-primary">{{ order.createdAt|date('d/m/Y H:i') }}</span>
+            <h3 class="mb-0" style="color:white;">Commande #{{ order.id }}</h3>
+            <span class=" bg-light ">{{ order.createdAt|date('d/m/Y H:i') }}</span>
         </div>
         
         <div class="card-body">
@@ -120,8 +120,8 @@
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">
-                        <i class="fa fa-arrow-left me-2"></i>Retour au tableau de bord
+                    <a href="{{ path('app_admin_order_print',{'id':order.id}) }}" class="btn btn-secondary">
+                        <i class="fas fa-print me-2"></i> Imprimer
                     </a>
                 </div>
             </div>
@@ -153,12 +153,12 @@
 }
 
 .bg-primary {
-    background-color: #D10024 !important;
+    background-color:rgb(21, 13, 15) !important;
 }
 
 .btn-secondary {
-    background-color: #15161D;
-    border-color: #15161D;
+    background-color:rgb(243, 243, 243);
+    border-color:rgb(255, 255, 255);
 }
 
 .btn-secondary:hover {
