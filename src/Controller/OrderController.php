@@ -14,19 +14,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 final class OrderController extends AbstractController
 {
+    private $mailer;
     private $orderRepository;
     private $entityManager;
     public function __construct(
         EntityManagerInterface $entityManager,
-        OrderRepository $orderRepository
+        OrderRepository $orderRepository,
+        MailerInterface $mailer
+
         
     )
     {
         $this->entityManager = $entityManager;
         $this->orderRepository = $orderRepository;
+        $this->mailer = $mailer;
     }
     #[Route('/order', name: 'app_order')]
     public function index(Request $request,
@@ -56,7 +63,17 @@ final class OrderController extends AbstractController
                 
                 }
                 $cart = $session->set('cart', []);
-            
+                $html=$this->renderView('Mail/mailOrderConfirm.html.twig', [
+                    'order' => $order
+                ]);
+                $email = (new Email(
+
+                ))
+                ->from('testutoriel@gmail.com')
+                ->to($order->getEmail())
+                ->subject('Order confirmation')
+                ->html($html);
+                $this->mailer->send($email);
                 $this->addFlash('success', 'Order created successfully');
                 return $this->redirectToRoute('app_home');
             }

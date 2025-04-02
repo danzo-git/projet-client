@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Controller\Admin;
-
 use App\Entity\Order;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Dom\Entity;
+use App\Service\PrintService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Knp\Component\Pager\PaginatorInterface;
@@ -17,11 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/admin/dashboard')]
 class DashboardController extends AbstractController
 {
+    private PrintService $printService;
     private OrderRepository $orderRepository;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository, PrintService $printService)
     {
         $this->orderRepository = $orderRepository;
+        $this->printService = $printService;
     }
 
     #[Route('/', name: 'app_admin_dashboard', methods: ['GET'])]
@@ -42,18 +43,7 @@ class DashboardController extends AbstractController
     #[Route('/order/{id}', name: 'app_admin_order', methods: ['GET'])]
     public function  showOrder(Order $order): Response
     {
-        // $pdfOptions = new Options();
-        // $pdfOptions->set('defaultFont', 'Arial');
-        // $dompdf = new Dompdf($pdfOptions);
-        // $html = $this->renderView('admin/dashboard/order/details_order.html.twig', [
-        //     'order' => $order
-        // ]);
-        // $dompdf->loadHtml($html);
-        // $dompdf->render();
-        // $pdf = $dompdf->output();
-        // $response = new Response($pdf);
-        // $response->headers->set('Content-Type', 'application/pdf');
-        // $response->headers->set('Content-Disposition', 'inline; filename="order".$order->getfirstname().".pdf"');
+        
         return $this->render('admin/dashboard/order/details_order.html.twig', [
             'order' => $order
         ]);
@@ -80,20 +70,8 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_admin_dashboard');
     }
 
-    #[Route('/order/{id}/print', name: 'app_admin_order_print', methods: ['GET'])]
+    #[Route('/admin/order/{id}/print', name: 'app_admin_order_print', methods: ['GET'])]
     public function  printOrder(Order $order): Response{
-        $pdfOptions = new Options();
-        $pdfOptions->set('defaultFont', 'Arial');
-        $dompdf = new Dompdf($pdfOptions);
-        $html = $this->renderView('admin/dashboard/order/print.html.twig', [
-            'order' => $order
-        ]);
-        $dompdf->loadHtml($html);
-        $dompdf->render();
-        $pdf = $dompdf->output();
-        $response = new Response($pdf);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Disposition', 'inline; filename="order".$order->getfirstname().".pdf"');
-        return $response;
+        return $this->printService->printOrder($order);
     }
 }

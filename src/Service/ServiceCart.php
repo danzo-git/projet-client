@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class ServiceCart
 {
+    
     private $productRepository;
     public function __construct(
         ProductRepository $productRepository

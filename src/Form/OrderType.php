@@ -24,6 +24,10 @@ class OrderType extends AbstractType
             'label' => false,
             'attr' => ['autocomplete' => 'family-name']
         ])
+        ->add('email', null, [
+            'label' => false,
+            'attr' => ['autocomplete' => 'email']
+        ])
         ->add('phone', TelType::class, [
             'label' => false,
             'attr' => ['autocomplete' => 'tel']
