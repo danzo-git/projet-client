@@ -48,8 +48,11 @@ class CategoryExtension extends AbstractExtension
         return $this->subCategoryRepository->findAll();
     }
 
-    public function getProductById(int $id)
+    public function getProductById($id)
     {
+        // Convertir l'ID en entier
+        $id = intval($id);
+        
         $product = $this->entityManager->getRepository(Product::class)->find($id);
         if (!$product) {
             return null; // Handle missing product

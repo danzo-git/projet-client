@@ -95,33 +95,28 @@
 
 						<div class="product-options">
 							<label>
-
-
 								{% if product.taille %}
-									Taille:
-									<select class="input-select">
+									<select class="input-select" id="sizeSelect" name="taille" required>
+										<option value="">Choisir une taille</option>
 										{% for taille in product.taille %}
 											<option value="{{ taille }}">{{ taille }}</option>
 										{% endfor %}
 									</select>
 								{% endif %}
-
 							</label>
-
 						</div>
 
 						<div class="add-to-cart">
-							<div class="qty-label">
-								Quantité
-								<div class="input-number">
-									<input type="number">
-									<span class="qty-up">+</span>
-									<span class="qty-down">-</span>
-								</div>
-							</div>
-							<button class="add-to-cart-btn">
-								<i class="fa fa-shopping-cart"></i>
-								Ajouter au panier</button>
+							<form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST">
+								<input type="hidden" name="_token" value="{{ csrf_token('cart') }}">
+								{% if product.taille %}
+									<input type="hidden" name="taille" id="selectedTaille">
+								{% endif %}
+								<button type="submit" class="add-to-cart-btn" {% if product.taille %}onclick="return validateTailleSelection()"{% endif %}>
+									<i class="fa fa-shopping-cart"></i>
+									Ajouter au panier
+								</button>
+							</form>
 						</div>
 
 						<ul class="product-btns">
@@ -462,4 +457,33 @@
 		<!-- /container -->
 	</div>
 	<!-- /Section -->
+
+	<script>
+function validateTailleSelection() {
+    const sizeSelect = document.getElementById('sizeSelect');
+    const selectedTaille = document.getElementById('selectedTaille');
+    
+    if (sizeSelect && selectedTaille) {
+        if (!sizeSelect.value) {
+            alert('Veuillez sélectionner une taille');
+            return false;
+        }
+        selectedTaille.value = sizeSelect.value;
+    }
+    return true;
+}
+
+// Mettre à jour la taille sélectionnée quand l'utilisateur change la sélection
+document.addEventListener('DOMContentLoaded', function() {
+    const sizeSelect = document.getElementById('sizeSelect');
+    if (sizeSelect) {
+        sizeSelect.addEventListener('change', function() {
+            const selectedTaille = document.getElementById('selectedTaille');
+            if (selectedTaille) {
+                selectedTaille.value = this.value;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

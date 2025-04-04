@@ -2001,10 +2001,7 @@ textarea.input {
   background-color: #E4E7ED;
   color: #D10024;
 }
-
-/*=========================================================
-	11 -> FOOTER
-===========================================================*/
+/*================ FOOTER ================*/
 
 #footer {
   background: #15161D;
@@ -2013,6 +2010,7 @@ textarea.input {
 
 #bottom-footer {
   background: #1E1F29;
+  padding: 15px 0;
 }
 
 .footer {
@@ -2020,48 +2018,178 @@ textarea.input {
 }
 
 .footer .footer-title {
+  margin: 0px 0px 20px;
+}
+
+.footer .footer-title h3 {
   color: #FFF;
   text-transform: uppercase;
   font-size: 18px;
-  margin: 0px 0px 30px;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.footer .footer-title h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 2px;
+  background-color: #D10024;
+}
+
+.footer p {
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Links */
+.footer-links {
+  padding-left: 0;
+  list-style: none;
 }
 
 .footer-links li+li {
-  margin-top: 15px;
+  margin-top: 12px;
 }
 
 .footer-links li a {
   color: #B9BABC;
+  transition: all 0.3s;
 }
 
 .footer-links li i {
-  margin-right: 15px;
+  margin-right: 10px;
   color: #D10024;
   width: 14px;
   text-align: center;
+  transition: all 0.3s;
 }
 
 .footer-links li a:hover {
   color: #D10024;
+  padding-left: 5px;
 }
 
-.copyright {
-  margin-top: 30px;
-  display: block;
-  font-size: 12px;
+.footer-links li a:hover i {
+  margin-right: 15px;
+}
+
+/* Social Icons */
+.footer-social {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 20px;
+}
+
+.footer-social li {
+  margin-right: 15px;
+}
+
+.footer-social li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #B9BABC;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s;
+}
+
+.footer-social li a:hover {
+  color: #FFF;
+  background-color: #D10024;
+}
+
+/* Newsletter */
+.footer input.form-control {
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border: none;
+  color: #FFF;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+}
+
+.footer .form-control::placeholder {
+  color: #B9BABC;
+}
+
+.footer .primary-btn {
+  background-color: #D10024;
+  color: #FFF;
+  border: none;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.footer .primary-btn:hover {
+  background-color: #E10024;
+}
+
+/* Payment Methods */
+.footer-payments {
+  margin-top: 20px;
+}
+
+.footer-payments h4 {
+  color: #FFF;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.footer-payments ul {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
 }
 
 .footer-payments li {
-  display: inline-block;
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 .footer-payments li a {
-  color: #15161D;
-  font-size: 36px;
-  display: block;
+  color: #B9BABC;
+  font-size: 24px;
+  transition: all 0.3s;
 }
 
+.footer-payments li a:hover {
+  color: #FFF;
+}
+
+/* Copyright */
+.copyright {
+  text-align: center;
+  display: block;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Responsive */
+@media only screen and (max-width: 767px) {
+  .footer {
+    margin: 15px 0;
+  }
+  
+  .footer .footer-title h3 {
+    margin-top: 15px;
+  }
+  
+  #bottom-footer {
+    padding: 10px 0;
+  }
+}
 /*=========================================================
 	12 -> SLICK STYLE
 ===========================================================*/

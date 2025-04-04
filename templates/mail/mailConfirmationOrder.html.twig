@@ -134,7 +134,8 @@
     <div class="email-container">
         <!-- En-tête de l'email -->
         <div style="text-align: center; margin-bottom: 20px;">
-            <img src="{{ logo_url }}" alt="Logo" style="max-width: 150px;">
+            <img src="{{ asset('img/logo.jpg') }}" width="80 px;" height="60 px;" alt="Logo">
+
         </div>
 
         <!-- Message de confirmation -->
@@ -199,7 +200,7 @@
             <h3 style="margin-top: 0;">Livraison</h3>
             <p><strong>Délai estimé:</strong> 2-3 jours ouvrables</p>
             <p><strong>Mode de livraison:</strong> Standard</p>
-            <a href="{{ tracking_url }}" class="button" style="color: white;">SUIVRE MA COMMANDE</a>
+            {# <a href="{{ tracking_url }}" class="button" style="color: white;">SUIVRE MA COMMANDE</a> #}
         </div>
 
         <!-- Détails des produits -->
@@ -272,28 +273,27 @@
         <div style="background-color: #f9f9f9; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
             <h3 style="margin-top: 0;">Politique de retour</h3>
             <p>Vous disposez de 14 jours à compter de la réception pour retourner un article. Les produits doivent être retournés dans leur état d'origine et dans leur emballage.</p>
-            <a href="{{ return_policy_url }}" style="color: #D10024;">En savoir plus sur nos conditions de retour</a>
+            <a href="#" style="color: #D10024;">En savoir plus sur nos conditions de retour</a>
         </div>
 
         <!-- Call to action -->
         <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ shop_url }}" class="button" style="color: white;">CONTINUER VOS ACHATS</a>
+            {# <a href="{{ shop_url }}" class="button" style="color: white;">CONTINUER VOS ACHATS</a> #}
         </div>
 
         <!-- Liens sociaux -->
         <div class="social-links">
             <p>Suivez-nous sur les réseaux sociaux</p>
-            <a href="{{ facebook_url }}">Facebook</a> |
-            <a href="{{ instagram_url }}">Instagram</a> |
-            <a href="{{ twitter_url }}">Twitter</a>
+             <a href="https://www.facebook.com/share/1LL6zxFN9v/?mibextid=wwXIfr">Facebook</a> |
+            <a href="https://www.tiktok.com/@hariassarsenejoe?_t=ZM-8vCr9t2yCBC&_r=1">Tik Tok</a> |
         </div>
         
         <!-- Pied de page -->
         <div class="footer">
             <hr>
             <p>Pour toute question concernant votre commande, contactez notre service client:</p>
-            <p>Email: <a href="mailto:contact@votreboutique.com">contact@votreboutique.com</a> | Téléphone: +225 XX XX XX XX</p>
-            <p>© {{ "now"|date('Y') }} VotreBoutique. Tous droits réservés.</p>
+            <p>Email: <a href="mailto:gnamakou1998@gmail.com">contact@votreboutique.com</a> | Téléphone: +225 88 24 41 15</p>
+            <p>© {{ "now"|date('Y') }} RendsToiChic. Tous droits réservés.</p>
         </div>
     </div>
 </body>

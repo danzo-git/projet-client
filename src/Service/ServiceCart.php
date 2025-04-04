@@ -19,16 +19,30 @@ class ServiceCart
         $cart = $session->get('cart', []);
         $cartWithProducts = [];
         $total = 0;
-
-        foreach ($cart as $id => $quantity) {
+    
+        foreach ($cart as $key => $item) {
+            // Extraire l'ID du produit de la clé (peut contenir la taille)
+            $id = explode('-', $key)[0];
             $product = $this->productRepository->find($id);
-            $cartWithProducts[] = [
+            
+            if (!$product) {
+                continue;
+            }
+            
+            $cartItem = [
                 'product' => $product,
-                'quantity' => $quantity
+                'quantity' => is_array($item) ? $item['quantity'] : $item,
             ];
-            $total += $product->getPrice() * $quantity;
+            
+            // Ajouter la taille si elle existe
+            if (isset($item['taille'])) {
+                $cartItem['taille'] = $item['taille'];
+            }
+            
+            $cartWithProducts[] = $cartItem;
+            $total += $product->getPrice() * $cartItem['quantity'];
         }
-
+    
         return [
             'carts' => $cartWithProducts,
             'total' => $total

@@ -147,7 +147,7 @@
                                                      onerror="this.src='{{ asset('img/placeholder-product.png') }}'">
                                             </div>
                                 </div>
-                                <div>{{cartInfo.product.price}} fcfa</div>
+                                <div>{{cartInfo.product.price * cartInfo.quantity}} fcfa</div>
                             </div>
                           {% endfor %} 
                         </div>

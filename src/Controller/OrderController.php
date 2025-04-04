@@ -17,23 +17,23 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-
+use App\Service\EmailService;
 final class OrderController extends AbstractController
 {
-    private $mailer;
+    private $emailService;
+   
     private $orderRepository;
     private $entityManager;
     public function __construct(
         EntityManagerInterface $entityManager,
         OrderRepository $orderRepository,
-        MailerInterface $mailer
-
-        
+        EmailService $emailService        
     )
     {
         $this->entityManager = $entityManager;
         $this->orderRepository = $orderRepository;
-        $this->mailer = $mailer;
+        $this->emailService = $emailService;
+       
     }
     #[Route('/order', name: 'app_order')]
     public function index(Request $request,
@@ -63,17 +63,9 @@ final class OrderController extends AbstractController
                 
                 }
                 $cart = $session->set('cart', []);
-                $html=$this->renderView('Mail/mailOrderConfirm.html.twig', [
-                    'order' => $order
-                ]);
-                $email = (new Email(
-
-                ))
-                ->from('testutoriel@gmail.com')
-                ->to($order->getEmail())
-                ->subject('Order confirmation')
-                ->html($html);
-                $this->mailer->send($email);
+                
+               $this->emailService->sendOrderConfirmation($order);
+                
                 $this->addFlash('success', 'Order created successfully');
                 return $this->redirectToRoute('app_home');
             }
