@@ -41,7 +41,7 @@ class OrderType extends AbstractType
                 'choice_label' => 'name',
             ])
             ->add('additionalAddress',)
-            ->add('paymentOnDelivery')
+            ->add('paymentOnDelivery',)
         ;
     }
 

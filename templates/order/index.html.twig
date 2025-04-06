@@ -164,37 +164,44 @@
                     </div>
                     <div class="payment-method mt-4">
                         <h4 class="mb-3">Méthode de paiement</h4>
-                       
+                        
                         <div class="input-radio mb-3">
-                            <input type="radio" name="payment" id="payment-2">
-                            <label for="payment-2">
-                                <span></span>
-                                Paiement par Orange Money
-                            </label>
+                            {{ form_widget(form.paymentOnDelivery, {
+                                'attr': {
+                                    'class': 'payment-radio',
+                                    'required': 'required'
+                                }
+                            }) }}
+                            {{ form_label(form.paymentOnDelivery, 'Paiement à la livraison', {
+                                'label_attr': {
+                                    'class': 'payment-label'
+                                }
+                            }) }}
                             <div class="caption">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                            </div>
-                        </div>
-                        <div class="input-radio mb-3">
-                            <input type="radio" name="payment" id="payment-3">
-                            {{ form_row(form.paymentOnDelivery) }}
-                            <label for="payment-3">
-                                <span></span>
-                               Paiement a la livraison
-                            </label>
-                            <div class="caption">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                <p>Le paiement sera effectué en espèces à la livraison de votre commande.</p>
                             </div>
                         </div>
                     </div>
+                  <!-- Message pour les expéditions -->
+                        <div id="expedition-message" class="alert alert-warning" style="display: none;">
+                            <h5>Pour une Expédition :</h5>
+                            <p>Vous devez vous acquitter du montant total avant l'expédition.</p>
+                            <p><strong>Numéro OM/WAVE :</strong> +225 88 24 41 15</p>
+                            <p><strong>MTN/WAVE :</strong> +225 05 85 89 39 10</p>
+                            <p>Après paiement, téléchargez votre facture comme preuve de paiement.</p>
+                        </div>
+                    </div>
                     <div class="input-checkbox mt-4">
-                        <input type="checkbox" id="terms">
+                        <input type="checkbox" id="terms" required>
                         <label for="terms">
                             <span></span>
                             J'ai lu et j'accepte les <a href="#">conditions générales</a>
                         </label>
                     </div>
-                    <a href="#" class="primary-btn order-submit btn-block mt-4">Passer la commande</a>
+
+                    {# <button type="submit" class="primary-btn order-submit btn-block mt-4">
+                        Passer la commande
+                    </button> #}
                 </div>
               
                 <!-- /Order Details -->
@@ -208,40 +215,116 @@
 <!-- /SECTION -->
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function(){
-        const citySelector=$('#order_city');
-        cityValue= citySelector.val();
-        const url=`http://127.0.0.1:8000/city/${cityValue}/shipping/cost`
+$(document).ready(function(){
+    const cityField = $('#order_city');
+    const onDeliverySection = $('#on-delivery-section');
+    const expeditionMessage = $('#expedition-message');
 
-        function ajaxRequest(url){
-             $.ajax({
-            url:url,
-            type:'GET',
-            success:function(response){
-                const newResponse=JSON.parse(response);
-                    if (parseInt(newResponse.status)===200)
-                    $('.shipping-cost').text(newResponse.content)
-                   
-                   
-                   const orderArticle= parseInt($('.order-total').text())
-                   const orderDelivery= parseInt($('.shipping-cost').text())
-
-                $('.order-total').text(orderArticle+ orderDelivery)
-                   // console.log()
-            },
-            error:function(xhr,status,error){
-
-            
-            }
-
-          
-        }) 
+    const initialOrderTotal = parseInt($('.order-total').text().replace(/\D/g, '')); // Extraction du nombre seulement
+    console.log();
+    function checkCity() {
+       const selectedCityText = $('#order_city').find('option:selected').text().toLowerCase().trim();
+        
+        if (selectedCityText.includes('expedition')) {
+            onDeliverySection.hide();
+            expeditionMessage.show();
+            $('.payment-radio').prop('checked', false).prop('disabled', true);
+        } else {
+            onDeliverySection.show();
+            expeditionMessage.hide();
+            $('.payment-radio').prop('disabled', false);
         }
-       ajaxRequest(url)
-          citySelector.on('change',function(){
-            const updateUrl=`http://127.0.0.1:8000/city/${$(this).val()}/shipping/cost`;
-                 ajaxRequest(updateUrl)
-            })
-    })
+    }
+
+    function updateShippingCost(cityValue) {
+        const url = `/city/${cityValue}/shipping/cost`; // Utilisation d'une URL relative
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+            beforeSend: function() {
+                $('.shipping-cost').html('<i class="fa fa-spinner fa-spin"></i>');
+            },
+            success: function(response) {
+                try {
+                    const data = typeof response === 'string' ? JSON.parse(response) : response;
+                    if (data.status === 200) {
+                        const shippingCost = parseInt(data.content) || 0;
+                        $('.shipping-cost').text(shippingCost + ' fcfa');
+                        $('.order-total').text(initialOrderTotal + shippingCost + ' fcfa');
+                    }
+                } catch (e) {
+                    console.error("Erreur de traitement :", e);
+                    $('.shipping-cost').text('Non disponible');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur AJAX :", error);
+                $('.shipping-cost').text('Erreur de calcul');
+            }
+        });
+    }
+    
+    // Initialisation
+    checkCity();
+    updateShippingCost(cityField.val());
+    
+    // Écouteurs d'événements
+    cityField.on('change', function() {
+        checkCity();
+        updateShippingCost($(this).val());
+    });
+});
 </script>
+<style>
+.payment-method .input-radio {
+    margin-bottom: 20px;
+}
+
+.payment-radio {
+    margin-right: 10px;
+}
+
+.payment-label {
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.caption {
+    margin-left: 25px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.input-checkbox {
+    margin: 20px 0;
+}
+
+.input-checkbox input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.order-submit {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+#expedition-message {
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+}
+
+#expedition-message h5 {
+    margin-top: 0;
+    color: #d32f2f;
+}
+
+.payment-radio:disabled + .payment-label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
 {% endblock %}

@@ -120,7 +120,21 @@
                                 </div>
                             </div>
                             <div class="add-to-cart">
-                                 <a href="{{path('app_cart_add',{'id':allProduct.id})}}"><button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i>Ajouter au panier</button></a>
+                                <form action="{{ path('app_cart_add', {'id': allProduct.id}) }}" method="POST">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cart') }}">
+                                    {% if allProduct.taille %}
+                                        <select name="taille" class="input-select" required>
+                                            <option value="">Taille</option>
+                                            {% for taille in allProduct.taille %}
+                                                <option value="{{ taille }}">{{ taille }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% endif %}
+                                    <button type="submit" class="add-to-cart-btn">
+                                        <i class="fa fa-shopping-cart"></i>
+                                        Ajouter au panier
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

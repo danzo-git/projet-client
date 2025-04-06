@@ -5,12 +5,12 @@
 		<div class="container">
 			<ul class="header-links pull-left">
 				<li>
-					<a href=" https://chat.whatsapp.com/t.me">
+					<a href="https://wa.me/22585893910">
 						<img src="{{ asset('img/icons-whatsapp.png') }}" alt="Logo">
 						+225 88 24 41 15</a>
 				</li>
 				<li>
-					<a href="#">
+					<a href="mailto:gnamakou1998@gmail.com">
 						<i class="fa fa-envelope-o"></i>gnamakou1998@gmail.com</a>
 				</li>
 				<li>
@@ -50,7 +50,7 @@
 				<div class="col-md-3">
 					<div class="header-logo">
 						<a href="{{ path('app_home') }}" class="logo">
-							<img src="{{ asset('img/logo.jpg') }}" width="80 px;" height="60 px;" alt="Logo">
+							<img src="{{ asset('img/logo-2.png') }}" width="80 px;" height="60 px;" alt="Logo">
 						</a>
 					</div>
 				</div>
@@ -117,10 +117,10 @@
                     <a href="{{ path('app_product_show_customer', {'id': product.id}) }}">
                         {{ product.name|u.truncate(20, '...') }}
                     </a>
-                    
-                    {% if item.taille  is  defined %}
+                    {% if item.taille %}<br><small>Taille: {{ item.taille }}</small>{% endif %}
+                    {# {% if item.taille  is  defined %}
                         <br><small>Taille: {{ item.taille }}</small>
-                    {% endif %}
+                    {% endif %} #}
                 </h5>
                 <div class="cart-item-meta">
                     <span class="cart-item-price">{{ product.price|number_format(0, ',', ' ') }} FCFA</span>
