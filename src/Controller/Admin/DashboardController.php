@@ -12,17 +12,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\UserRepository;
+use App\Repository\ProductRepository;
 
 #[Route('/admin/dashboard')]
 class DashboardController extends AbstractController
 {
     private PrintService $printService;
     private OrderRepository $orderRepository;
-
-    public function __construct(OrderRepository $orderRepository, PrintService $printService)
+    private UserRepository $userRepository;
+    private ProductRepository $productRepository;
+    public function __construct(OrderRepository $orderRepository, PrintService $printService, UserRepository $userRepository,
+                                ProductRepository $productRepository)
     {
         $this->orderRepository = $orderRepository;
         $this->printService = $printService;
+        $this->userRepository = $userRepository;
+        $this->productRepository = $productRepository;
     }
 
     #[Route('/', name: 'app_admin_dashboard', methods: ['GET'])]
@@ -36,7 +42,9 @@ class DashboardController extends AbstractController
 
         return $this->render('admin/dashboard/index.html.twig', [
             'controller_name' => 'Admin/DashboardController',
-            'orders' => $orders
+            'orders' => $orders,
+            'users'=>$this->userRepository->findAll(),
+            'products'=>$this->productRepository->findAll()
         ]);
     }
 

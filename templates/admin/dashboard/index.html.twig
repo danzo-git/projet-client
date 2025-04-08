@@ -26,7 +26,13 @@
                     </div>
                     <div>
                         <h5 class="card-title">Utilisateurs</h5>
-                        <h3 class="mb-0">150</h3>
+                       <h3 class="mb-0">
+    {% if users is defined and users is not empty %}
+        {{ users|length }} utilisateur(s)
+    {% else %}
+        0 utilisateur
+    {% endif %}
+</h3>
                         <p class="card-text text-success"><i class="fa fa-arrow-up"></i> +5% ce mois</p>
                     </div>
                 </div>
@@ -71,7 +77,13 @@
                     </div>
                     <div>
                         <h5 class="card-title">Produits</h5>
-                        <h3 class="mb-0">87</h3>
+                            <h3 class="mb-0">
+    {% if products is defined and products is not empty %}
+        {{ products|length }} produit(s)
+    {% else %}
+        0 Produit   
+    {% endif %}
+</h3>
                         <p class="card-text text-muted">Total en stock</p>
                     </div>
                 </div>

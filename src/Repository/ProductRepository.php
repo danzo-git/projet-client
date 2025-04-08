@@ -133,4 +133,19 @@ public function findByPriceBetween($minPrice, $maxPrice, $subCategoryId = null) 
     
     return $qb->getQuery()->getResult();
 }
+
+    //    /**
+    //     * @return Product[] Returns an array of Product objects
+    //     */
+       public function searchResult(string $query): array
+       {
+           return $this->createQueryBuilder('p')
+               ->orWhere('p.name LIKE :query')
+               ->orWhere('p.description LIKE :query')
+               ->setParameter('query', '%' . $query . '%')
+               ->getQuery()
+               ->getResult()
+           ;
+       }
+
 }
