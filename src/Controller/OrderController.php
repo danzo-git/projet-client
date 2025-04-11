@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Mime\Email;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
 use App\Service\EmailService;
 use App\Service\PrintService;
 final class OrderController extends AbstractController
@@ -42,13 +40,68 @@ final class OrderController extends AbstractController
     #[Route('/order', name: 'app_order')]
 public function index(Request $request, ServiceCart $serviceCart, SessionInterface $session): Response
 {
+    // Vérifier si l'utilisateur est connecté
+    if (!$this->getUser()) {
+        // Ajouter un message flash
+        $this->addFlash('danger', 'Veuillez vous connecter pour passer une commande');
+        // Sauvegarder l'URL actuelle dans la session pour rediriger après la connexion
+        $session->set('redirect_url', $this->generateUrl('app_order'));
+        // Rediriger vers la page de connexion
+        return $this->redirectToRoute('app_login');
+    }
+    
     $cartInfo = $serviceCart->getCartInfo($session);
+    
+    // Vérifier si le panier est vide
+    if (empty($cartInfo['carts'])) {
+        $this->addFlash('warning', 'Votre panier est vide');
+        return $this->redirectToRoute('app_home');
+    }
+    
     $order = new Order();
+    
+    // Pré-remplissage possible ici si nécessaire plus tard
+    // Pour le moment, laissons l'utilisateur remplir le formulaire
+    
     $form = $this->createForm(OrderType::class, $order);
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
         if ($order->isPaymentOnDelivery()) {
+            if (!empty($cartInfo['total'])) {
+                // 1. Calcul du total
+                $order->setTotalPrice($cartInfo['total']);
+                
+                // 2. Persist et flush de la commande
+                $this->entityManager->persist($order);
+                $this->entityManager->flush();
+
+                // 3. Ajout des produits de la commande
+                foreach ($cartInfo['carts'] as $cart) {
+                    $orderProduct = new OrderProduct();
+                    $orderProduct->setOrder($order)
+                                ->setProduct($cart['product'])
+                                ->setQuantity($cart['quantity']);
+                    $this->entityManager->persist($orderProduct);
+                }
+                
+                // 4. Un seul flush pour tous les produits
+                $this->entityManager->flush();
+
+                // 5. Vidage du panier
+                $session->set('cart', []);
+                
+                // 6. Envoi d'email
+                $this->emailService->sendOrderConfirmation($order);
+
+                // 7. Message flash
+                $this->addFlash('success', 'Commande envoyée avec succès');
+
+                // 8. Redirection vers une nouvelle route pour l'affichage
+                return $this->redirectToRoute('order_confirmation', ['id' => $order->getId()]);
+            }
+        }
+        else {
             if (!empty($cartInfo['total'])) {
                 // 1. Calcul du total
                 $order->setTotalPrice($cartInfo['total']);
@@ -92,7 +145,7 @@ public function index(Request $request, ServiceCart $serviceCart, SessionInterfa
 }
 
 #[Route('/order/confirmation/{id}', name: 'order_confirmation')]
-public function confirmation(Order $order, PrintService $printService): Response
+public function confirmation(Order $order): Response
 {
     // Affiche d'abord la page de confirmation avec le message flash
     // puis propose le téléchargement du PDF

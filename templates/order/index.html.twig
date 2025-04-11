@@ -169,7 +169,7 @@
                             {{ form_widget(form.paymentOnDelivery, {
                                 'attr': {
                                     'class': 'payment-radio',
-                                    'required': 'required'
+                                        
                                 }
                             }) }}
                             {{ form_label(form.paymentOnDelivery, 'Paiement à la livraison', {
@@ -185,7 +185,7 @@
                   <!-- Message pour les expéditions -->
                         <div id="expedition-message" class="alert alert-warning" style="display: none;">
                             <h5>Pour une Expédition :</h5>
-                            <p>Vous devez vous acquitter du montant total avant l'expédition.</p>
+                            <p>APRÈS LE PAIEMENT, ON EXPÉDIE ET ON VOUS TRANSMET LE CODE DU COLIS.</p>
                             <p><strong>Numéro OM/WAVE :</strong> +225 88 24 41 15</p>
                             <p><strong>MTN/WAVE :</strong> +225 05 85 89 39 10</p>
                             <p>Après paiement, téléchargez votre facture comme preuve de paiement.</p>
@@ -199,9 +199,7 @@
                         </label>
                     </div>
 
-                    {# <button type="submit" class="primary-btn order-submit btn-block mt-4">
-                        Passer la commande
-                    </button> #}
+                   
                 </div>
               
                 <!-- /Order Details -->

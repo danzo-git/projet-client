@@ -44,13 +44,20 @@ class SecurityAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        // Priorité 1 : Chemin cible enregistré par la sécurité de Symfony
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
+        
+        // Priorité 2 : URL personnalisée stockée en session (par exemple depuis le contrôleur de commande)
+        $redirectUrl = $request->getSession()->get('redirect_url');
+        if ($redirectUrl) {
+            $request->getSession()->remove('redirect_url');
+            return new RedirectResponse($redirectUrl);
+        }
 
-        // For example:
+        // Priorité 3 : Redirection par défaut vers la page d'accueil
         return new RedirectResponse($this->urlGenerator->generate('app_home'));
-        // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 
     protected function getLoginUrl(Request $request): string
