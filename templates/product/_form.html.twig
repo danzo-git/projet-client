@@ -1,0 +1,245 @@
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">🛍️ Ajouter un Produit</h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'class': 'form', 'enctype': 'multipart/form-data'}}) }}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.name, 'Nom du produit', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Nom du produit'}}) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.price, 'Prix', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': 'Prix en €'}}) }}
+                </div>
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description du produit'}}) }}
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.taille, 'Taille', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.taille, {'attr': {'class': 'form-control', 'placeholder': 'Taille du produit'}}) }}
+                </div>
+            <div class="row">
+                {# <div class="col-md-6 mb-3">
+                    {{ form_label(form.stock, 'stock', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.stock, {'attr': {'class': 'form-control', 'placeholder': 'stock du produit'}}) }}
+                </div> #}
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.subCategories, 'Sous-Catégories', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.subCategories, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                 <div class="col-md-6 mb-3">
+                
+                
+                <!-- Container pour les images -->
+                <div class="image-upload-container">
+                   <!-- Add this right after the preview-container div opens -->
+<div class="row preview-container mb-3">
+    {% if product.productImages is defined and product.productImages|length > 0 %}
+        {% for image in product.productImages %}
+            <div class="col-md-3 preview-item mb-3" data-index="{{ loop.index0 }}">
+                <div class="card h-100">
+                    <img src="{{ asset('uploads/' ~ image.imagePath) }}" class="card-img-top preview-image" alt="Image produit" style="height: 150px; object-fit: cover;">
+                    <div class="card-body p-2 text-center">
+                        <p class="card-text small mb-1">{{ image.imagePath|length > 15 ? image.imagePath|slice(0, 15) ~ '...' : image.imagePath }}</p>
+                        <button type="button" class="btn btn-sm btn-danger remove-image" data-id="{{ image.id }}">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <!-- The rest of your preview container -->
+</div>
+                    
+                    <div class="mb-3">
+                        <label for="multiple-images" class="form-label">Sélectionner des images (max 4)</label>
+                        <input type="file" class="form-control" id="multiple-images" multiple accept="image/*">
+                        <small class="text-muted">Format accepté: JPG, JPEG, PNG (max 2Mo)</small>
+                    </div>
+                </div>
+                
+                <!-- Conteneur pour les champs du formulaire -->
+                <div id="product-images-fields-container" style="display: none;">
+                    {% for imageField in form.productImages %}
+                        <div class="image-field" data-index="{{ loop.index0 }}">
+                            {{ form_widget(imageField) }}
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- On stocke le prototype en tant qu'attribut data pour JavaScript -->
+                <div 
+                    id="product-images-prototype" 
+                    data-prototype="{{ include('product/_image_prototype.html.twig', {'prototype': form.productImages.vars.prototype})|e('html_attr') }}"
+                    data-index="{{ form.productImages|length }}">
+                </div>
+            </div>
+            </div>
+            
+           
+
+            <div class="text-center mt-3">
+                <button class="btn btn-danger shadow-sm">
+                    <i class="fas fa-save"></i>
+                    {{ button_label|default('Enregistrer') }}
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const MAX_IMAGES = 4;
+    const multipleImagesInput = document.getElementById('multiple-images');
+    const previewContainer = document.querySelector('.preview-container');
+    const prototypeContainer = document.getElementById('product-images-prototype');
+    const formFieldsContainer = document.getElementById('product-images-fields-container');
+    
+    // Get existing images count
+    const existingImagesCount = document.querySelectorAll('.preview-item').length;
+    
+    // Initialize selected files array
+    let selectedFiles = [];
+    
+    // Set initial prototype index to the number of existing images
+    if (prototypeContainer.dataset.index === '0' && existingImagesCount > 0) {
+        prototypeContainer.dataset.index = existingImagesCount;
+    }
+    
+    // Add event listeners to existing remove buttons
+    document.querySelectorAll('.remove-image[data-id]').forEach(button => {
+        button.addEventListener('click', function() {
+            const imageId = this.getAttribute('data-id');
+            const previewItem = this.closest('.preview-item');
+            const index = previewItem.dataset.index;
+            
+            // Create a hidden input to mark the image for deletion
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `delete_images[]`;
+            hiddenInput.value = imageId;
+            formFieldsContainer.appendChild(hiddenInput);
+            
+            // Remove the preview
+            previewItem.remove();
+        });
+    });
+    
+    // Fonction pour ajouter un nouveau champ d'image au formulaire Symfony
+    function addImageField(file, index) {
+        // On récupère le prototype depuis l'attribut data
+        const prototype = prototypeContainer.dataset.prototype;
+        
+        // On crée un nouvel élément à partir du prototype
+        const newFieldHtml = prototype.replace(/__name__/g, index);
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newFieldHtml;
+        tempDiv.className = 'image-field';
+        tempDiv.dataset.index = index;
+        
+        // On ajoute le champ au conteneur
+        formFieldsContainer.appendChild(tempDiv);
+        
+        // On récupère le champ file qui vient d'être créé (la structure exacte dépend de votre formulaire)
+        const newFileInput = tempDiv.querySelector('input[type="file"]');
+        
+        // On crée un objet FileList à partir de notre fichier
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        
+        // On assigne notre FileList au champ file
+        newFileInput.files = dataTransfer.files;
+        
+        return index;
+    }
+    
+    // Fonction pour créer une prévisualisation d'image
+    function createPreview(file, index) {
+        const reader = new FileReader();
+        const col = document.createElement('div');
+        col.className = 'col-md-3 preview-item mb-3';
+        col.dataset.index = index;
+        
+        reader.onload = function(e) {
+            col.innerHTML = `
+                <div class="card h-100">
+                    <img src="${e.target.result}" class="card-img-top preview-image" alt="Aperçu" style="height: 150px; object-fit: cover;">
+                    <div class="card-body p-2 text-center">
+                        <p class="card-text small mb-1">${file.name.substring(0, 15)}${file.name.length > 15 ? '...' : ''}</p>
+                        <button type="button" class="btn btn-sm btn-danger remove-image">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter l'événement de suppression
+            col.querySelector('.remove-image').addEventListener('click', function() {
+                // Supprimer l'image de notre tableau
+                const imageIndex = parseInt(col.dataset.index);
+                selectedFiles = selectedFiles.filter((_, i) => i !== imageIndex);
+                
+                // Supprimer la prévisualisation
+                col.remove();
+                
+                // Supprimer le champ du formulaire
+                const fieldToRemove = document.querySelector(`.image-field[data-index="${imageIndex}"]`);
+                if (fieldToRemove) {
+                    fieldToRemove.remove();
+                }
+                
+                // Mettre à jour l'index du prototype
+                prototypeContainer.dataset.index = selectedFiles.length + existingImagesCount;
+            });
+        };
+        
+        reader.readAsDataURL(file);
+        previewContainer.appendChild(col);
+    }
+    
+    // Gestionnaire d'événement pour l'input file multiple
+    multipleImagesInput.addEventListener('change', function() {
+        // Calculer le nombre d'images existantes (qui n'ont pas été supprimées)
+        const currentExistingCount = document.querySelectorAll('.preview-item[data-id]').length;
+        
+        // Vérifier le nombre d'images total
+        const totalImages = currentExistingCount + selectedFiles.length + this.files.length;
+        
+        if (totalImages > MAX_IMAGES) {
+            alert(`Vous ne pouvez pas télécharger plus de ${MAX_IMAGES} images.`);
+            return;
+        }
+        
+        // Ajouter les nouvelles images
+        for (let i = 0; i < this.files.length; i++) {
+            const file = this.files[i];
+            const newIndex = parseInt(prototypeContainer.dataset.index);
+            
+            // Ajouter au tableau des fichiers
+            selectedFiles.push(file);
+            
+            // Créer la prévisualisation
+            createPreview(file, newIndex);
+            
+            // Ajouter au formulaire Symfony
+            addImageField(file, newIndex);
+            
+            // Incrémenter l'index
+            prototypeContainer.dataset.index = newIndex + 1;
+        }
+        
+        // Réinitialiser l'input pour permettre de sélectionner à nouveau les mêmes fichiers
+        this.value = '';
+    });
+});
+</script>

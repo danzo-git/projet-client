@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Villes{% endblock %}
+
+{% block content %}
+    <div class="city-index-container">
+        <div class="header-section">
+            <h1 class="page-title">Liste des Villes</h1>
+            <a href="{{ path('app_city_new') }}" class="btn btn-create">
+                <i class="fas fa-plus-circle"></i> Nouvelle Ville
+            </a>
+        </div>
+     {% include 'layouts/_flash_message.html.twig' %}
+
+        {% if cities|length > 0 %}
+            <div class="responsive-table">
+                <table class="city-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Prix</th>
+                            <th>Complément</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city in cities %}
+                            <tr>
+                                <td data-label="ID">{{ city.id }}</td>
+                                <td data-label="Nom">{{ city.name }}</td>
+                                <td data-label="Prix">{{ city.price }} €</td>
+                                <td data-label="Complément">{{ city.complement }}</td>
+                                <td data-label="Actions" class="actions-cell">
+                                    <a href="{{ path('app_city_show', {'id': city.id}) }}" class="btn-action btn-view" title="Voir">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_city_edit', {'id': city.id}) }}" class="btn-action btn-edit" title="Éditer">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                     {{ include('city/_delete_form.html.twig') }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="no-records">
+                <i class="fas fa-info-circle"></i>
+                <p>Aucune ville enregistrée</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <style>
+        .city-index-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-create {
+            background-color:rgb(204, 46, 46);
+            color: white;
+        }
+
+        .btn-create:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .responsive-table {
+            overflow-x: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+        }
+
+        .city-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .city-table thead {
+            background-color:rgb(214, 53, 28);
+            color: white;
+        }
+
+        .city-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .city-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+            color:rgb(24, 12, 12);
+        }
+
+        .city-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .city-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-view {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-edit {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #d35400;
+        }
+
+        .no-records {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            color: #7f8c8d;
+        }
+
+        .no-records i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+
+        .no-records p {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .city-table {
+                display: block;
+            }
+            
+            .city-table thead {
+                display: none;
+            }
+            
+            .city-table tr {
+                display: block;
+                margin-bottom: 1rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }
+            
+            .city-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .city-table td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #2c3e50;
+                margin-right: 1rem;
+            }
+            
+            .actions-cell {
+                justify-content: flex-end;
+            }
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Résultats de recherche{% endblock %}
+
+{% block content %}
+<!-- SECTION RÉSULTATS DE RECHERCHE -->
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <!-- STORE -->
+            <div id="store" class="col-md-12">
+                <h2 class="section-title mb-4">Résultats de recherche</h2>
+                
+                {% if allProducts|length > 0 %}
+                    <!-- PRODUITS -->
+                    <div class="row">
+                        {% for product in allProducts %}
+                        <div class="col-md-4 col-sm-6 mb-4">
+                            <div class="product">
+                                <div class="product-img">
+                                    <img src="{{ asset('uploads/' ~ product.productImages[0].imagePath) }}" alt="{{ product.name }}">
+                                    
+                                </div>
+                                <div class="product-body">
+                                    <p class="product-category">{{ product.subCategories.getValues[0].name }}</p>
+                                    <h3 class="product-name">
+                                        <a href="{{ path('app_product_show_customer', {'id': product.id}) }}">{{ product.name }}</a>
+                                    </h3>
+                                    <h4 class="product-price">{{ product.price }} FCFA</h4>
+                                    <div class="product-rating">
+                                        {% for i in 1..5 %}
+                                            <i class="fa fa-star"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="product-btns">
+                                        <a href="{{ path('app_product_show_customer', {'id': product.id}) }}" class="btn btn-sm btn-outline-dark">
+                                            <i class="fa fa-eye"></i> Voir le produit
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="add-to-cart">
+                                    <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="cart-form">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('cart') }}">
+                                        {% if product.taille %}
+                                            <select name="taille" class="form-control mb-2" required>
+                                                <option value="">Choisir une taille</option>
+                                                {% for taille in product.taille %}
+                                                    <option value="{{ taille }}">{{ taille }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        {% endif %}
+                                        <button type="submit" class="add-to-cart-btn btn-block">
+                                            <i class="fa fa-shopping-cart"></i> Ajouter au panier
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <!-- PAGINATION -->
+                    <div class="pagination-container text-center mt-4">
+                        {# {{ knp_pagination_render(allProducts, 'partials/pagination.html.twig') }} #}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p>Aucun produit ne correspond à votre recherche. Veuillez essayer avec d'autres termes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /SECTION -->
+
+<style>
+    /* Styles améliorés pour les cartes produit */
+    .product {
+        border: 1px solid #e5e5e5;
+        border-radius: 5px;
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .product:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transform: translateY(-3px);
+    }
+    
+    .product-img {
+        height: 250px;
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s;
+    }
+    
+    .product:hover .product-img img {
+        transform: scale(1.05);
+    }
+    
+    .product-label {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1;
+    }
+    
+    .product-label .sale, 
+    .product-label .new {
+        display: inline-block;
+        color: #FFF;
+        padding: 5px 10px;
+        font-size: 12px;
+        text-transform: uppercase;
+        margin: 0 0 5px;
+        border-radius: 3px;
+    }
+    
+    .product-label .sale {
+        background-color: #D10024;
+    }
+    
+    .product-label .new {
+        background-color: #00B894;
+    }
+    
+    .product-body {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+    }
+    
+    .product-category {
+        text-transform: uppercase;
+        font-size: 12px;
+        color: #8D99AE;
+        margin-bottom: 10px;
+    }
+    
+    .product-name {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .product-name a {
+        color: #2B2D42;
+        text-decoration: none;
+    }
+    
+    .product-name a:hover {
+        color: #D10024;
+    }
+    
+    .product-price {
+        font-size: 18px;
+        color: #D10024;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    
+    .product-rating {
+        margin-bottom: 10px;
+    }
+    
+    .product-rating i {
+        color: #FFD700;
+        font-size: 14px;
+    }
+    
+    .product-btns {
+        margin-top: auto;
+    }
+    
+    .add-to-cart {
+        padding: 15px;
+        background-color: #F5F5F5;
+    }
+    
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #D10024;
+        color: #FFF;
+        border: none;
+        border-radius: 3px;
+        font-weight: 700;
+        text-transform: uppercase;
+        transition: 0.3s all;
+    }
+    
+    .add-to-cart-btn:hover {
+        background-color: #E0002D;
+    }
+    
+    .section-title {
+        font-weight: 700;
+        color: #2B2D42;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .section-title:after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: #D10024;
+    }
+    
+    .pagination-container {
+        margin-top: 30px;
+    }
+</style>
+{% endblock %}

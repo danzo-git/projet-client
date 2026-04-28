@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la commande #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- En-tête de la commande -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0" style="color:white;">Commande #{{ order.id }}</h3>
+            <span class=" bg-light ">{{ order.createdAt|date('d/m/Y H:i') }}</span>
+        </div>
+        
+        <div class="card-body">
+            <div class="row">
+                <!-- Informations client -->
+                <div class="col-md-6">
+                    <h5 class="card-title text-primary mb-4">Informations Client</h5>
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Nom complet:</strong></p>
+                        <p class="ms-3">{{ order.firstName }} {{ order.lastName }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Téléphone:</strong></p>
+                        <p class="ms-3">{{ order.phone }}</p>
+                    </div>
+                </div>
+                
+                <!-- Informations livraison -->
+                <div class="col-md-6">
+                    <h5 class="card-title text-primary mb-4">Adresse de livraison</h5>
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Adresse:</strong></p>
+                        <p class="ms-3">{{ order.address }}</p>
+                    </div>
+                    {% if order.additionalAddress %}
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Complément d'adresse:</strong></p>
+                        <p class="ms-3">{{ order.additionalAddress }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Ville:</strong></p>
+                        <p class="ms-3">{{ order.city.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Détails des produits -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">Produits commandés</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.orderProducts %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ asset('uploads/' ~ item.product.productImages[0].imagePath) }}" 
+                                         alt="{{ item.product.name }}" 
+                                         class="me-3" 
+                                         style="width: 50px; height: 50px; object-fit: contain;">
+                                    <div>
+                                        <h6 class="mb-0">{{ item.product.name }}</h6>
+                                        <small class="text-muted">{{ item.product.brand }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ item.product.price }} FCFA</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="text-end">{{ item.product.price * item.quantity }} FCFA</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                      <tr>
+                    <td colspan="3" class="text-end">livraison</td>
+                         <td class="text-end"><strong>{{ order.city.price }} FCFA</strong></td>
+                         </tr>
+                        <tr>
+                        
+                         
+                            <td colspan="3" class="text-end"><strong>Total</strong></td>
+                            <td class="text-end"><strong>{{ order.totalPrice + order.city.price}} FCFA</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations de paiement -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">Informations de paiement</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Méthode de paiement:</strong></p>
+                    <p class="ms-3">
+                        {% if order.paymentOnDelivery %}
+                            <span class="badge bg-warning">Paiement à la livraison</span>
+                        {% else %}
+                            <span class="badge bg-success">Paiement en ligne</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="{{ path('app_admin_order_print',{'id':order.id}) }}" class="btn btn-secondary">
+                        <i class="fas fa-print me-2"></i> Imprimer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.table img {
+    border-radius: 5px;
+}
+
+.badge {
+    padding: 8px 12px;
+    font-weight: 500;
+}
+
+.text-primary {
+    color: #D10024 !important;
+}
+
+.bg-primary {
+    background-color:rgb(21, 13, 15) !important;
+}
+
+.btn-secondary {
+    background-color:rgb(243, 243, 243);
+    border-color:rgb(255, 255, 255);
+}
+
+.btn-secondary:hover {
+    background-color: #D10024;
+    border-color: #D10024;
+}
+</style>
+{% endblock %}

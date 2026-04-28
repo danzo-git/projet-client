@@ -1,0 +1,328 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RTC - checkout{% endblock %}
+
+{% block content %}
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Billing Details -->
+                <div class="billing-details  ">
+                    <div class="section-title mb-4">
+                        <h3 class="title">Adresse de facturation</h3>
+                    </div>
+                    {{ form_start(form, { attr: { class: 'form-horizontal' } }) }}
+                    
+                    <!-- Prénom -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.firstName, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.firstName, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Prénom',
+                                autocomplete: 'given-name'
+                            } 
+                        }) }}
+                        {{ form_errors(form.firstName) }}
+                    </div>
+                    
+                    <!-- Nom -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.lastName, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.lastName, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Nom',
+                                autocomplete: 'family-name'
+                            } 
+                        }) }}
+                        {{ form_errors(form.lastName) }}
+                    </div>
+                    
+                    <!-- Adresse -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.address, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.address, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Adresse',
+                                autocomplete: 'street-address'
+                            } 
+                        }) }}
+                        {{ form_errors(form.address) }}
+                    </div>
+                     <!-- Email -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.email, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.email, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Email',
+                                autocomplete: 'Email'
+                            } 
+                        }) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+                    
+                    <!-- Ville -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.city, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.city, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Ville',
+                                autocomplete: 'address-level2'
+                            } 
+                        }) }}
+                        {{ form_errors(form.city) }}
+                    </div>
+                    
+                    <!-- Téléphone (Format Ivoirien) -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.phone, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.phone, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: '+22501020304',
+                                type: 'tel',
+                                pattern: '^\+225[0-9]{8}$',
+                                title: 'Format: +225 suivi de 8 chiffres (ex: +22501020304)',
+                                autocomplete: 'tel'
+                            } 
+                        }) }}
+                        <small class="form-text text-muted">Format requis: +225XXXXXXXX (8 chiffres)</small>
+                        {{ form_errors(form.phone) }}
+                    </div>
+                    
+                    <!-- Adresse complémentaire -->
+                    <div class="form-group mb-3">
+                        {{ form_label(form.additionalAddress, null, { label_attr: { class: 'sr-only' } }) }}
+                        {{ form_widget(form.additionalAddress, { 
+                            attr: { 
+                                class: 'input form-control', 
+                                placeholder: 'Complément d\'adresse (Optionnel)'
+                            } 
+                        }) }}
+                    </div>
+                    
+                    <!-- Bouton de soumission -->
+                    <div class="form-group mt-4">
+                        <button type="submit" class="primary-btn btn-block">Continuer vers le paiement</button>
+                    </div>
+                    
+                    
+                </div>
+                <!-- /Billing Details -->
+            </div>
+
+            <!-- Order Details -->
+            <div class="col-md-6">
+                <div class="order-details  p-4">
+                    <div class="section-title text-center mb-4">
+                        <h3 class="title">Votre Commande</h3>
+                    </div>
+                    <div class="order-summary">
+                        <div class="order-col d-flex justify-content-between mb-3">
+                            <div><strong>PRODUIT</strong></div>
+                            <div><strong>TOTAL</strong></div>
+                        </div>
+                        <div class="order-products">
+                        {% for cartInfo in cartInfos  %}
+                        
+                        {% set ImageProducts = cartInfo.product.productImages %}
+                        
+                            <div class="order-col d-flex justify-content-between mb-2">
+                            
+                          
+                          
+                                <div>{{cartInfo.product.name}} x {{cartInfo.quantity}}
+                                    <br/>
+                                      <div class="cart-item-img">
+                                                <img src="{{ asset('uploads/' ~ ImageProducts[0].imagePath) }}" 
+                                                     alt="{{ cartInfo.product.name }}"
+                                                     onerror="this.src='{{ asset('img/placeholder-product.png') }}'">
+                                            </div>
+                                </div>
+                                <div>{{cartInfo.product.price * cartInfo.quantity}} fcfa</div>
+                            </div>
+                          {% endfor %} 
+                        </div>
+                        <hr class="my-3">
+                        <div class="order-col d-flex justify-content-between mb-2">
+                            <div>Frais de livraison</div>
+                            <div><strong class="text-success shipping-cost"></strong> fcfa</div>
+                        </div>
+                        <hr class="my-3">
+                        <div class="order-col d-flex justify-content-between mb-3">
+                            <div><strong>TOTAL</strong></div>
+                            <div><strong class="order-total text-primary">{{total}} </strong></div>
+                        </div>
+                    </div>
+                    <div class="payment-method mt-4">
+                        <h4 class="mb-3">Méthode de paiement</h4>
+                        
+                        <div class="input-radio mb-3">
+                            {{ form_widget(form.paymentOnDelivery, {
+                                'attr': {
+                                    'class': 'payment-radio',
+                                        
+                                }
+                            }) }}
+                            {{ form_label(form.paymentOnDelivery, 'Paiement à la livraison', {
+                                'label_attr': {
+                                    'class': 'payment-label'
+                                }
+                            }) }}
+                            <div class="caption">
+                                <p>Le paiement sera effectué en espèces à la livraison de votre commande.</p>
+                            </div>
+                        </div>
+                    </div>
+                  <!-- Message pour les expéditions -->
+                        <div id="expedition-message" class="alert alert-warning" style="display: none;">
+                            <h5>Pour une Expédition :</h5>
+                            <p>APRÈS LE PAIEMENT, ON EXPÉDIE ET ON VOUS TRANSMET LE CODE DU COLIS.</p>
+                            <p><strong>Numéro OM/WAVE :</strong> +225 88 24 41 15</p>
+                            <p><strong>MTN/WAVE :</strong> +225 05 85 89 39 10</p>
+                            <p>Après paiement, téléchargez votre facture comme preuve de paiement.</p>
+                        </div>
+                    </div>
+                    <div class="input-checkbox mt-4">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">
+                            <span></span>
+                            J'ai lu et j'accepte les <a href="#">conditions générales</a>
+                        </label>
+                    </div>
+
+                   
+                </div>
+              
+                <!-- /Order Details -->
+            </div>
+        </div>
+    {{ form_end(form) }}
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /SECTION -->
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+$(document).ready(function(){
+    const cityField = $('#order_city');
+    const onDeliverySection = $('#on-delivery-section');
+    const expeditionMessage = $('#expedition-message');
+
+    const initialOrderTotal = parseInt($('.order-total').text().replace(/\D/g, '')); // Extraction du nombre seulement
+    console.log();
+    function checkCity() {
+       const selectedCityText = $('#order_city').find('option:selected').text().toLowerCase().trim();
+        
+        if (selectedCityText.includes('expedition')) {
+            onDeliverySection.hide();
+            expeditionMessage.show();
+            $('.payment-radio').prop('checked', false).prop('disabled', true);
+        } else {
+            onDeliverySection.show();
+            expeditionMessage.hide();
+            $('.payment-radio').prop('disabled', false);
+        }
+    }
+
+    function updateShippingCost(cityValue) {
+        const url = `/city/${cityValue}/shipping/cost`; // Utilisation d'une URL relative
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+            beforeSend: function() {
+                $('.shipping-cost').html('<i class="fa fa-spinner fa-spin"></i>');
+            },
+            success: function(response) {
+                try {
+                    const data = typeof response === 'string' ? JSON.parse(response) : response;
+                    if (data.status === 200) {
+                        const shippingCost = parseInt(data.content) || 0;
+                        $('.shipping-cost').text(shippingCost + ' fcfa');
+                        $('.order-total').text(initialOrderTotal + shippingCost + ' fcfa');
+                    }
+                } catch (e) {
+                    console.error("Erreur de traitement :", e);
+                    $('.shipping-cost').text('Non disponible');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur AJAX :", error);
+                $('.shipping-cost').text('Erreur de calcul');
+            }
+        });
+    }
+    
+    // Initialisation
+    checkCity();
+    updateShippingCost(cityField.val());
+    
+    // Écouteurs d'événements
+    cityField.on('change', function() {
+        checkCity();
+        updateShippingCost($(this).val());
+    });
+});
+</script>
+<style>
+.payment-method .input-radio {
+    margin-bottom: 20px;
+}
+
+.payment-radio {
+    margin-right: 10px;
+}
+
+.payment-label {
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.caption {
+    margin-left: 25px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.input-checkbox {
+    margin: 20px 0;
+}
+
+.input-checkbox input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.order-submit {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+#expedition-message {
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+}
+
+#expedition-message h5 {
+    margin-top: 0;
+    color: #d32f2f;
+}
+
+.payment-radio:disabled + .payment-label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Collection-{{categorieName}}{% endblock %}
+
+{% block content %}
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <!-- ASIDE -->
+            <div id="aside" class="col-md-3">
+                <form id="filter-form" method="get" action="{{ path('app_sub_category_show_collection_product', {'id': app.request.get('id')}) }}">
+                    <!-- Filtre par sous-catégorie -->
+                    <div class="aside">
+                        <h3 class="aside-title">{{ categorieName }}</h3>
+                        <div class="checkbox-filter">
+                            {% for subCategory in categoryProducts %}
+                             {# {{dump(subCategory.products.getValues)}} #}
+                                <div class="input-checkbox">
+                                    <input type="checkbox" id="subcategory-{{ subCategory.id }}" name="subcategories[]" value="{{ subCategory.id }}"
+                                        {% if selectedSubCategories is defined and subCategory.id in selectedSubCategories %}checked{% endif %}
+                                        class="filter-checkbox">
+                                    <label for="subcategory-{{ subCategory.id }}">
+                                        <span></span>
+                                        {{ subCategory.name }}
+                                        <small>({{ subCategory.products|length }})</small>
+                                    </label>
+                                </div>
+                                
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Filtre par prix -->
+                    <div class="aside">
+                        <h3 class="aside-title">Prix</h3>
+                        <div class="price-filter">
+                            <div id="price-slider"></div>
+                            <div class="price-inputs">
+                                <div class="input-number price-min">
+                                    <input id="price-min" name="price_min" type="number" value="{{ minPrice }}" class="filter-input">
+                                    <span class="qty-up">+</span>
+                                    <span class="qty-down">-</span>
+                                </div>
+                                <span>-</span>
+                                <div class="input-number price-max">
+                                    <input id="price-malx" name="price_max" type="number" value="{{ maxPrice }}" class="filter-input" >
+                                    <span class="qty-up">+</span>
+                                    <span class="qty-down">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/> <br/>
+                    <!-- Filtre par marque -->
+                    {# <div class="aside">
+                        <h3 class="aside-title">Marque</h3>
+                        <div class="checkbox-filter">
+                            {% if availableBrands is defined and availableBrands is not empty %}
+                                {% for brand in availableBrands %}
+                                
+                                    <div class="input-checkbox">
+                                        <input type="checkbox" id="brand-{{ loop.index }}" name="brands[]" value="{{ brand.brand }}"
+                                            {% if selectedBrands is defined and brand.brand in selectedBrands %}checked{% endif %}
+                                            class="filter-checkbox">
+                                        <label for="brand-{{ loop.index }}">
+                                            <span></span>
+                                            
+                                            <small>({{ brand.count|default(0) }})</small>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>Aucune marque disponible</p>
+                            {% endif %}
+                        </div>
+                    </div> #}
+                    
+                    <!-- Bouton d'application des filtres -->
+                    <button type="submit" class="primary-btn cta-btn">Appliquer les filtres</button>
+                    <a href="{{ path('app_sub_category_show_collection_product', {'id': app.request.get('id')}) }}" class="clear-filters-btn">Réinitialiser</a>
+                </form>
+            </div>
+            <!-- /ASIDE -->
+
+            <!-- STORE -->
+            <div id="store" class="col-md-9">
+                
+
+                <!-- store products -->
+                <div class="row">
+                    <!-- product -->
+                    {% for allProduct in allProducts %}
+                    <div class="col-md-4 col-xs-6">
+                        <div class="product">
+                            <div class="product-img">
+                                <img src="{{asset('uploads/'~ allProduct.productImages[0].imagePath)}}" alt="">
+                                <div class="product-label">
+                                    <span class="sale">-30%</span>
+                                    <span class="new">NEW</span>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <p class="product-category">{{allProduct.subCategories.getValues[0].name}}</p>
+                                <h3 class="product-name">  <a href="{{path('app_product_show_customer',{'id':allProduct.id})}}">{{allProduct.name}}</a></h3>
+                                <h4 class="product-price">{{allProduct.price}} FCFA</h4>
+                                <div class="product-rating">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <div class="product-btns">
+                                    {# <button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+                                    <button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button> #}
+                                    <button class="quick-view"><a href="{{path('app_product_show_customer',{'id':allProduct.id})}}"><i class="fa fa-eye"></i></a><span class="tooltipp">quick view</span></button>
+                                </div>
+                            </div>
+                            <div class="add-to-cart">
+                                <form action="{{ path('app_cart_add', {'id': allProduct.id}) }}" method="POST">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cart') }}">
+                                    {% if allProduct.taille %}
+                                        <select name="taille" class="input-select" required>
+                                            <option value="">Taille</option>
+                                            {% for taille in allProduct.taille %}
+                                                <option value="{{ taille }}">{{ taille }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    {% endif %}
+                                    <button type="submit" class="add-to-cart-btn">
+                                        <i class="fa fa-shopping-cart"></i>
+                                        Ajouter au panier
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /product -->
+                    {% endfor %}
+                </div>
+                <!-- /store products -->
+                 {# <!-- store bottom filter -->#}
+{{knp_pagination_render(allProducts,'partials/pagination.html.twig')}}
+               
+                {#<!-- /store bottom filter --> #}
+            </div>
+            <!-- /STORE -->
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- /SECTION -->
+
+<style>
+	/* Style du conteneur d'image */
+		.product-img {
+			height: 250px; /* Hauteur fixe pour la zone d'image */
+			width: 100%;
+			overflow: hidden;
+			position: relative;
+		}
+
+		/* Style de l'image */
+		.product-img img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain; /* 'contain' pour garantir que l'image soit visible en entier */
+		}
+
+		/* Style pour le corps du produit */
+		.product-body {
+			padding: 15px;
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+		}
+		.shop{
+			height: 250px; /* Hauteur fixe pour la zone d'image */
+			width: 100%;
+			overflow: hidden;
+			position: relative;
+		}
+
+		.shop shop-img{
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser le slider avec les valeurs actuelles
+    const minValue = {{ minPrice|default(1) }};
+    const maxValue = {{ maxPrice|default(1000000) }};
+    
+    // Vérifier si le slider existe et l'initialiser
+    const priceSlider = document.getElementById('price-slider');
+    if (priceSlider && typeof noUiSlider !== 'undefined') {
+        console.log('Initialisation du slider avec', minValue, maxValue);
+        
+        try {
+            // Détruire l'instance existante si elle existe
+            if (priceSlider.noUiSlider) {
+                priceSlider.noUiSlider.destroy();
+            }
+            
+            // Créer une nouvelle instance avec les valeurs actuelles
+            noUiSlider.create(priceSlider, {
+                start: [minValue, maxValue],
+                connect: true,
+                step: 1,
+                range: {
+                    'min': 1,
+                    'max': 1000000
+                }
+            });
+            
+            // Synchroniser le slider avec les champs input
+            const priceMin = document.getElementById('price-min');
+            const priceMax = document.getElementById('price-max');
+            
+            priceSlider.noUiSlider.on('update', function(values, handle) {
+                if (handle === 0) {
+                    priceMin.value = Math.round(values[0]);
+                } else {
+                    priceMax.value = Math.round(values[1]);
+                }
+            });
+            
+            // Soumission automatique du formulaire lorsque le slider change
+            priceSlider.noUiSlider.on('change', function() {
+                // Attendre un peu avant de soumettre pour éviter trop de requêtes
+                setTimeout(function() {
+                    document.getElementById('filter-form').submit();
+                }, 500);
+            });
+        } catch (e) {
+            console.error('Erreur lors de l\'initialisation du slider:', e);
+        }
+    }
+    
+    // Le reste de votre code JavaScript existant...
+});
+</script>
+{% endblock %}

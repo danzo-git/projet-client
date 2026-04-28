@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="alert alert-success">
+            Votre commande #{{ order.id }} a bien été enregistrée!
+        </div>
+		{% include 'layouts/_flash_message.html.twig' %}
+
+        
+        <a href="{{ downloadUrl }}" class="btn btn-primary">
+            <i class="fas fa-download"></i> Télécharger la facture
+        </a>
+        
+        <a href="{{ path('app_home') }}" class="btn btn-secondary">
+            Retour à l'accueil
+        </a>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        fbq('track', 'Purchase', {
+            value: {{ order.totalPrice }},
+            currency: 'EUR',
+            content_ids: [{% for item in order.orderProducts %}{{ item.product.id }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            content_type: 'product',
+            num_items: {{ order.orderProducts|length }},
+            order_id: '{{ order.id }}'
+        });
+    </script>
+{% endblock %}

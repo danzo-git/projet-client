@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ajout - stock
+{% endblock %}
+
+{% block content %}
+	<div class="section">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-6">
+                 <h1 class="text-center mb-4">Ajouter stock de {{product.name}}</h1>
+					<div class="card">
+						<div class="card-body">
+
+							{{ form_start(form) }}
+							{{form_row(form.quantity,{'attr':{'class':'form form-control'}})}}
+							<br/>
+							<input type="submit" value="sauvegarder" class="btn btn-danger">
+							{{ form_end(form) }}
+							<div>
+								<div>
+									<div>
+										<div>
+											<div>
+											{% endblock %}

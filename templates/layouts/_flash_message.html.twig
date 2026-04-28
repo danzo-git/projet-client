@@ -1,0 +1,19 @@
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+
+{% for type, messages in app.flashes() %}
+    {% for message in messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: "{% if type == 'success' %}Succès !{% elseif type == 'danger' %}Erreur !{% else %}Info{% endif %}",
+                    text: "{{ message }}",
+                    icon: "{% if type == 'success' %}success{% elseif type == 'danger' %}error{% else %}info{% endif %}",
+                    confirmButtonText: "OK"
+                });
+            });
+        </script>
+    {% endfor %}
+{% endfor %}

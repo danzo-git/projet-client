@@ -1,0 +1,57 @@
+<div class="product">
+    <div class="product-img">
+        {% if product.productImages is not empty %}
+            <img src="{{ asset('uploads/' ~ product.productImages[0].imagePath) }}" alt="{{ product.name }}">
+        {% else %}
+            <img src="{{ asset('img/placeholder.png') }}" alt="No image available">
+        {% endif %}
+        <div class="product-label">
+            <span class="new">Nouveau</span>
+        </div>
+    </div>
+    <div class="product-body">
+        <p class="product-category">
+            {% for subCategory in product.getSubCategories() %}
+                {{ subCategory.name }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <h3 class="product-name">
+            <a href="{{path('app_product_show_customer',{'id':product.id})}}">{{ product.name }}</a>
+        </h3>
+        <h4 class="product-price">{{ product.price }} fcfa</h4>
+        <div class="product-rating">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+        </div>
+        <div class="product-btns">
+            {# <button class="add-to-wishlist">
+                <i class="fa fa-heart-o"></i>
+                <span class="tooltipp">add to wishlist</span>
+            </button> #}
+            <button class="quick-view">
+                <i class="fa fa-eye"></i>
+                <span class="tooltipp">quick view</span>
+            </button>
+        </div>
+    </div>
+    <div class="add-to-cart">
+        <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST">
+            <input type="hidden" name="_token" value="{{ csrf_token('cart') }}">
+            {% if product.taille %}
+                <select name="taille" class="input-select" required>
+                    <option value="">Taille</option>
+                    {% for taille in product.taille %}
+                        <option value="{{ taille }}">{{ taille }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+            <button type="submit" class="add-to-cart-btn">
+                <i class="fa fa-shopping-cart"></i>
+                Ajouter au panier
+            </button>
+        </form>
+    </div>
+</div>
