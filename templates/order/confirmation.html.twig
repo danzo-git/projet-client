@@ -17,3 +17,16 @@
         </a>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        fbq('track', 'Purchase', {
+            value: {{ order.totalPrice }},
+            currency: 'EUR',
+            content_ids: [{% for item in order.orderProducts %}{{ item.product.id }}{% if not loop.last %}, {% endif %}{% endfor %}],
+            content_type: 'product',
+            num_items: {{ order.orderProducts|length }},
+            order_id: '{{ order.id }}'
+        });
+    </script>
+{% endblock %}

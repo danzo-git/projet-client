@@ -1,6 +1,66 @@
 {% extends 'base.html.twig' %}
-{% block title %}Detail - RTC
+{% block title %}{{ product.name }} - RTC{% endblock %}
+
+{% block meta %}
+    {{ parent() }}
+    <meta property="og:title" content="{{ product.name }}">
+    <meta property="og:description" content="{{ product.description|striptags|length > 160 ? product.description|striptags|slice(0, 157) ~ '...' : product.description|striptags }}">
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="{{ url('app_product_show_customer', {'id': product.id}) }}">
+    {% if product.productImages|length > 0 %}
+        <meta property="og:image" content="{{ absolute_url(asset('uploads/' ~ product.productImages[0].imagePath)) }}">
+        {% if product.productImages|length > 1 %}
+            {% for image in product.productImages|slice(1, 2) %}
+                <meta property="og:image" content="{{ absolute_url(asset('uploads/' ~ image.imagePath)) }}">
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    <meta property="product:price:amount" content="{{ product.price }}">
+    <meta property="product:price:currency" content="FCFA">
+    {% if product.brand %}
+        <meta property="product:brand" content="{{ product.brand }}">
+    {% endif %}
+    {% if product.taille %}
+        <meta property="product:size" content="{{ product.taille|join(', ') }}">
+    {% endif %}
+    <meta property="product:availability" content="{{ product.stock > 0 ? 'in stock' : 'out of stock' }}">
+    {% if product.subCategories|length > 0 %}
+        <meta property="product:category" content="{{ product.subCategories[0].name }}">
+    {% endif %}
 {% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    // Suivi de vue produit pour Facebook Pixel
+    fbq('track', 'ViewContent', {
+        content_name: '{{ product.name }}',
+        content_category: '{% if product.subCategories|length > 0 %}{{ product.subCategories[0].name }}{% endif %}',
+        content_ids: ['{{ product.id }}'],
+        content_type: 'product',
+        value: {{ product.price }},
+        currency: 'FCFA'
+    });
+    
+    // Suivi d'ajout au panier pour Facebook Pixel
+    document.addEventListener('DOMContentLoaded', function() {
+        const addToCartForm = document.querySelector('form[action*="cart/add"]');
+        if (addToCartForm) {
+            addToCartForm.addEventListener('submit', function() {
+                fbq('track', 'AddToCart', {
+                    content_name: '{{ product.name }}',
+                    content_category: '{% if product.subCategories|length > 0 %}{{ product.subCategories[0].name }}{% endif %}',
+                    content_ids: ['{{ product.id }}'],
+                    content_type: 'product',
+                    value: {{ product.price }},
+                    currency: 'FCFA'
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
+
 {% block content %}
 
 	

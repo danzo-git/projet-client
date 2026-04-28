@@ -32,7 +32,7 @@ class EmailService
         $orderProduct->getProduct()->getProductImages()->initialize();
     }
         $email = (new Email())
-            ->from(new Address('testutoriel@gmail.com', 'Votre Boutique'))
+            ->from(new Address('noreply@rtcstore225.com', 'Votre Boutique'))
             ->to($order->getEmail())
             ->subject('Confirmation de votre commande #' . $order->getId())
             ->html(
